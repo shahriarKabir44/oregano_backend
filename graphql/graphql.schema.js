@@ -19,7 +19,7 @@ const UserType=new GraphQLObjectType({
         isRider: { type: GraphQLInt },
         rating: {type:GraphQLInt},
         currentCity:{type:GraphQLString},
-        Id:{type:GraphQLID},
+        id:{type:GraphQLID},
 
     })
 })
@@ -31,7 +31,7 @@ let post=new Post()
 const PostType=new GraphQLObjectType({
     name:"Post",
     fields: ()=>({
-        Id:{type:GraphQLID},
+        id:{type:GraphQLID},
         itemName: { type: GraphQLString },
         images: { type: GraphQLString  },
         lattitude: { type: GraphQLInt },
