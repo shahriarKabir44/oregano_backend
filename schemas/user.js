@@ -6,7 +6,8 @@ var userSchema = new mongoose.Schema({
     currentLattitude: { type: Number },
     currentLongitude: { type: Number },
     isRider: { type: Number },
-    rating: {type:Number}
+    rating: {type:Number},
+    currentCity:{type:String}
 })
 
 const User = mongoose.model('User', userSchema)
