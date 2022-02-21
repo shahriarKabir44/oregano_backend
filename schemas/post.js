@@ -10,8 +10,10 @@ var postSchema = new mongoose.Schema({
     unitPrice:{ type: Number },
     stock:{ type: Number },
     time:{ type: Number },
-    rating:{ type: Number }
-    
+    rating:{ type: Number },
+    currentCity:{type: String},
+    isPopular:{type:Number},
+    tags:{type:String}
 })
 
 const Post = mongoose.model('Post', postSchema)
