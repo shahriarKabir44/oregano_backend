@@ -14,5 +14,9 @@ module.exports = class Post {
             data: newPost['_doc']
         }
     }
+    async findOne(query) {
+        return await this.postSchema.findOne(query)
+
+    }
 
 }
