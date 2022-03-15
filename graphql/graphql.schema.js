@@ -6,66 +6,56 @@ const {
     GraphQLID,
     GraphQLInt,
     GraphQLList,
-    GraphQLNonNull
+    GraphQLNonNull,
+    GraphQLFloat,
+
 
 } = graphql;
-
-let User = require('../repositories/User')
-let Post = require('../repositories/Post')
-let Order = require('../schemas/order')
-let user = new User()
-let post = new Post()
-let notification = require('../schemas/notifications')
-let orderItem = require('../schemas/orderItem')
-
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
         facebookToken: { type: GraphQLString },
         phone: { type: GraphQLString },
-        currentLattitude: { type: GraphQLInt },
-        currentLongitude: { type: GraphQLInt },
+        currentLatitude: { type: GraphQLFloat },
+        currentLongitude: { type: GraphQLFloat },
         isRider: { type: GraphQLInt },
-        rating: { type: GraphQLInt },
+        rating: { type: GraphQLFloat },
         currentCity: { type: GraphQLString },
         id: { type: GraphQLID },
+
     })
 })
+let User = require('../repositories/User')
+let Post = require('../repositories/Post')
 
+let user = new User()
+let post = new Post()
 const PostType = new GraphQLObjectType({
     name: "Post",
     fields: () => ({
         id: { type: GraphQLID },
         itemName: { type: GraphQLString },
         images: { type: GraphQLString },
+        latitude: { type: GraphQLFloat },
+        longitude: { type: GraphQLFloat },
+        postedBy: { type: GraphQLID },
         amountProduced: { type: GraphQLInt },
         unitPrice: { type: GraphQLInt },
+        stock: { type: GraphQLInt },
+        time: { type: GraphQLFloat },
+        rating: { type: GraphQLInt },
+        currentCity: { type: GraphQLString },
+        isPopular: { type: GraphQLInt },
         tags: { type: GraphQLString },
-        unitType: { type: GraphQLString },
-        country: { type: GraphQLString },
-        district: { type: GraphQLString },
-        city: { type: GraphQLString },
-        latitude: { type: GraphQLInt },
-        longitude: { type: GraphQLInt },
-        postedOn: { type: GraphQLInt },
-        postedBy: { type: GraphQLID },
         owner: {
             type: UserType,
             resolve(parent, args) {
-                return user.findOne(parent.postedBy)
+                return user.findOne({ _id: parent.postedBy })
             }
         }
     })
 })
 
-const NotificationType = new GraphQLObjectType({
-    type: { type: GraphQLInt },
-    isSeen: { type: GraphQLInt },
-    recipient: { type: GraphQLID },
-    relatedSchemaId: { type: GraphQLID },
-    time: { type: GraphQLInt },
-    message: { type: GraphQLString },
-})
 
 const OrderType = new GraphQLObjectType({
     name: "Order",
@@ -79,7 +69,7 @@ const OrderType = new GraphQLObjectType({
         riderId: { type: GraphQLID },
         status: { type: GraphQLInt },
         charge: { type: GraphQLInt },
-        time: { type: GraphQLInt },
+        time: { type: GraphQLFloat },
         buyer: {
             type: UserType,
             async resolve(parent, args) {
@@ -107,17 +97,48 @@ const OrderType = new GraphQLObjectType({
     })
 })
 
-const OrderItemType = new GraphQLObjectType({
-    orderId: { type: GraphQLID },
-    postId: { type: GraphQLID },
-    amount: { type: GraphQLInt },
-    post: {
-        type: PostType,
-        async resolve(parent, args) {
-            return await post.findOne({ _id: parent.postId })
-        }
-    }
+const NotificationType = new GraphQLObjectType({
+    name: "Notification",
+    fields: () => ({
+        type: { type: GraphQLInt },
+        isSeen: { type: GraphQLInt },
+        recipient: { type: GraphQLID },
+        relatedSchemaId: { type: GraphQLID },
+        time: { type: GraphQLFloat },
+        message: { type: GraphQLString },
+    })
+
 })
+
+const TagType = new GraphQLObjectType({
+    name: "Tag",
+    fields: () => ({
+        tagName: { type: GraphQLString },
+        postId: { type: GraphQLID },
+        findPost: {
+            type: new GraphQLList(PostType),
+            async resolve(parent, args) {
+                return await post.findOne({ _id: parent.postId })
+            }
+        }
+    })
+})
+
+const OrderItemType = new GraphQLObjectType({
+    name: "orderItem",
+    fields: () => ({
+        orderId: { type: GraphQLID },
+        postId: { type: GraphQLID },
+        amount: { type: GraphQLInt },
+        post: {
+            type: PostType,
+            async resolve(parent, args) {
+                return await post.findOne({ _id: parent.postId })
+            }
+        }
+    })
+})
+
 
 const RootQueryType = new GraphQLObjectType({
     name: "rootQuery",
@@ -134,8 +155,8 @@ const RootQueryType = new GraphQLObjectType({
             args: {
                 id: { type: GraphQLID }
             },
-            resolve(parent, args) {
-                user.findOne({ _id: args.id })
+            async resolve(parent, args) {
+                return await user.findOne({ _id: args.id })
             }
         },
         findPost: {
@@ -143,8 +164,8 @@ const RootQueryType = new GraphQLObjectType({
             args: {
                 id: { type: GraphQLID }
             },
-            resolve(parent, args) {
-                post.findOne({ _id: args.id })
+            async resolve(parent, args) {
+                return await post.findOne({ _id: args.id })
             }
         },
         getCreatedPosts: {
@@ -192,6 +213,15 @@ const RootQueryType = new GraphQLObjectType({
                 return notification.find({ recipient: args.id })
             }
         },
+        searchByTags: {
+            type: TagType,
+            args: {
+                tagName: { type: GraphQLString }
+            },
+            async resolve(parent, args) {
+                return await tags.find({ tagName: parent.tagName })
+            }
+        }
 
     }
 })
@@ -213,13 +243,16 @@ module.exports = new GraphQLSchema({
                     country: { type: GraphQLString },
                     district: { type: GraphQLString },
                     city: { type: GraphQLString },
-                    latitude: { type: GraphQLInt },
-                    longitude: { type: GraphQLInt },
-                    postedOn: { type: GraphQLInt },
+                    latitude: { type: GraphQLFloat },
+                    longitude: { type: GraphQLFloat },
+                    postedOn: { type: GraphQLFloat },
                     postedBy: { type: GraphQLID },
+                    tags: { type: GraphQLString }
                 },
                 async resolve(parent, args) {
-                    return await post.createPost(args)
+                    let data = await post.createPost(args)
+                    console.log(data)
+                    return data
                 }
             },
             createUser: {
@@ -227,10 +260,10 @@ module.exports = new GraphQLSchema({
                 args: {
                     facebookToken: { type: GraphQLString },
                     phone: { type: GraphQLString },
-                    currentLattitude: { type: GraphQLInt },
-                    currentLongitude: { type: GraphQLInt },
+                    currentLatitude: { type: GraphQLFloat },
+                    currentLongitude: { type: GraphQLFloat },
                     isRider: { type: GraphQLInt },
-                    rating: { type: GraphQLInt },
+                    rating: { type: GraphQLFloat },
                     currentCity: { type: GraphQLString },
                 },
                 async resolve(parent, args) {
@@ -248,7 +281,7 @@ module.exports = new GraphQLSchema({
                     riderId: { type: GraphQLID },
                     status: { type: GraphQLInt },
                     charge: { type: GraphQLInt },
-                    time: { type: GraphQLInt },
+                    time: { type: GraphQLFloat },
                 },
                 async resolve(parent, args) {
                     let newOrder = new Order(args)
@@ -276,7 +309,7 @@ module.exports = new GraphQLSchema({
                     isSeen: { type: GraphQLInt },
                     recipient: { type: GraphQLID },
                     relatedSchemaId: { type: GraphQLID },
-                    time: { type: GraphQLInt },
+                    time: { type: GraphQLFloat },
                     message: { type: GraphQLString },
                 },
                 async resolve(parent, args) {
