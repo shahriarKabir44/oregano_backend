@@ -2,18 +2,18 @@ var mongoose = require('mongoose')
 
 var postSchema = new mongoose.Schema({
     itemName: { type: String },
-    images: { type: String  },
-    lattitude: { type: Number },
+    images: { type: String },
+    amountProduced: { type: Number },
+    unitPrice: { type: Number },
+    tags: { type: String },
+    unitType: { type: String },
+    country: { type: String },
+    district: { type: String },
+    city: { type: String },
+    latitude: { type: Number },
     longitude: { type: Number },
-    postedBy:{type: mongoose.Schema.ObjectId},
-    amountProduced:{ type: Number },
-    unitPrice:{ type: Number },
-    stock:{ type: Number },
-    time:{ type: Number },
-    rating:{ type: Number },
-    currentCity:{type: String},
-    isPopular:{type:Number},
-    tags:{type:String}
+    postedOn: { type: Number },
+    postedBy: { type: mongoose.Schema.ObjectId },
 })
 
 const Post = mongoose.model('Post', postSchema)
