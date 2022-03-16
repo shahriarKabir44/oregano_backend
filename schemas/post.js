@@ -13,7 +13,7 @@ var postSchema = new mongoose.Schema({
     latitude: { type: Number },
     longitude: { type: Number },
     postedOn: { type: Number },
-    postedBy: { type: mongoose.Schema.ObjectId },
+    postedBy: { type: mongoose.Schema.Types.ObjectId },
 })
 
 const Post = mongoose.model('Post', postSchema)

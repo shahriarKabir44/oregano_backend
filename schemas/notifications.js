@@ -3,8 +3,8 @@ var mongoose = require('mongoose')
 var notificationSchema = new mongoose.Schema({
     type: { type: Number },
     isSeen: { type: Number },
-    recipient: { type: mongoose.Schema.Objectid },
-    relatedSchemaId: { type: mongoose.Schema.Objectid },
+    recipient: { type: mongoose.Schema.Types.ObjectId },
+    relatedSchemaId: { type: mongoose.Schema.Types.ObjectId },
     time: { type: Number },
     message: { type: String },
 })

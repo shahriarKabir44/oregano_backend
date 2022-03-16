@@ -27,7 +27,7 @@ const UserType = new GraphQLObjectType({
 })
 let User = require('../repositories/User')
 let Post = require('../repositories/Post')
-
+let orderItem = require('../schemas/orderItem')
 let user = new User()
 let post = new Post()
 const PostType = new GraphQLObjectType({

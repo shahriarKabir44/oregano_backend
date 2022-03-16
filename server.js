@@ -15,7 +15,8 @@ function startExpress() {
     let app = express()
     app.use(cors())
     app.get('/', (req, res) => {
-        f().then(() => {
+        createTag().then(() => {
+            console.log("done")
             res.send("data")
         })
 
@@ -29,9 +30,10 @@ function startExpress() {
 
     app.listen(process.env.PORT || 3000)
 }
-const post = require('./schemas/post')
-async function f() {
-    let newUser = new post({
+const post = require('./schemas/post');
+const user = require('./schemas/user')
+async function addPost() {
+    let newPost = new post({
         itemName: "Burger",
         images: JSON.stringify([
             "https://www.simplyrecipes.com/thmb/gazZFx2d2vq4lq1JE-Hv2jUqRR4=/3900x2600/filters:fill(auto,1)/Simply-Recipes-Mushroom-Swiss-Burger-LEAD-10-e86ce22657bb4a11b5d4b3f4d1230fe3.jpg",
@@ -52,5 +54,21 @@ async function f() {
         postedBy: "62310d9c4477e1111a3c4c33",
 
     })
-    await newUser.save()
+    await newPost.save()
+}
+
+async function updateUser() {
+    let x = { "name": "Tarif Hasan", "profileImageURL": "https://www.eatthis.com/wp-content/uploads/sites/4//media/images/ext/870072551/chef-plating-meals.jpg?quality=82&strip=all", "coverPhotoURL": "https://image.shutterstock.com/image-photo/chef-hands-keep-wok-fire-260nw-1758966962.jpg", "email": "mitch@gmail.com", "phone": "12345" }
+    x.profileImageURL = "https://www.taxadvisermagazine.com/sites/default/files/styles/article_full/public/employee-Deepak%20Sethi.jpg?itok=ZKrPSHWR&c=957d9622c9a1717ee19018eff40a9919"
+    return await user.findByIdAndUpdate("62310decf9ce47560e8f1f1f", { facebookToken: JSON.stringify(x) })
+}
+const tag = require('./schemas/tags')
+async function createTag() {
+    let x = {
+        tagName: "spicy",
+        postId: "6231112575df38f67437995c"
+    }
+    let newTag = new tag(x)
+    await newTag.save()
+    return newTag
 }
