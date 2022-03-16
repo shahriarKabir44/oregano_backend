@@ -11,6 +11,12 @@ const {
 
 
 } = graphql;
+let User = require('../repositories/User')
+let Post = require('../repositories/Post')
+let user = new User()
+let post = new Post()
+
+
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
@@ -22,14 +28,20 @@ const UserType = new GraphQLObjectType({
         rating: { type: GraphQLFloat },
         currentCity: { type: GraphQLString },
         id: { type: GraphQLID },
-
+        lastPost: {
+            type: PostType,
+            async resolve(parent, args) {
+                let x = await post.findLatest(parent.id)
+                console.log(x);
+                return x[0]
+            }
+        }
     })
 })
-let User = require('../repositories/User')
-let Post = require('../repositories/Post')
+
 let orderItem = require('../schemas/orderItem')
-let user = new User()
-let post = new Post()
+let connection = require('../schemas/connection')
+
 const PostType = new GraphQLObjectType({
     name: "Post",
     fields: () => ({
@@ -56,6 +68,25 @@ const PostType = new GraphQLObjectType({
     })
 })
 
+const ConnectionType = new GraphQLObjectType({
+    name: "Connection",
+    fields: () => ({
+        followerId: { type: GraphQLID },
+        followeeId: { type: GraphQLID },
+        follower: {
+            type: UserType,
+            async resolve(parent, args) {
+                return user.findOne({ _id: parent.followerId })
+            }
+        },
+        followee: {
+            type: UserType,
+            async resolve(parent, args) {
+                return user.findOne({ _id: parent.followeeId })
+            }
+        }
+    })
+})
 
 const OrderType = new GraphQLObjectType({
     name: "Order",
@@ -221,8 +252,25 @@ const RootQueryType = new GraphQLObjectType({
             async resolve(parent, args) {
                 return await tags.find({ tagName: parent.tagName })
             }
-        }
-
+        },
+        getFollowers: {
+            type: new GraphQLList(ConnectionType),
+            args: {
+                followeeId: { type: GraphQLID }
+            },
+            async resolve(parent, args) {
+                return await connection.find({ followeeId: args.followeeId })
+            }
+        },
+        getFollowees: {
+            type: new GraphQLList(ConnectionType),
+            args: {
+                followerId: { type: GraphQLID }
+            },
+            async resolve(parent, args) {
+                return await connection.find({ followerId: args.followerId })
+            }
+        },
     }
 })
 
@@ -318,7 +366,18 @@ module.exports = new GraphQLSchema({
                     return newNotification['_doc']
                 }
             },
-
+            createConnection: {
+                type: ConnectionType,
+                args: {
+                    followerId: { type: GraphQLID },
+                    followeeId: { type: GraphQLID },
+                },
+                async resolve(parent, args) {
+                    let newConnection = new connection(args)
+                    await newConnection.save()
+                    return newConnection['_doc']
+                }
+            }
         }
     })
 });

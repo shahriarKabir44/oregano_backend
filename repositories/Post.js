@@ -17,5 +17,8 @@ module.exports = class Post {
         return await this.postSchema.findOne(query)
 
     }
+    async findLatest(ownerId) {
+        return await this.postSchema.find({ postedBy: ownerId }).sort({ postedOn: -1 }).limit(1)
+    }
 
 }
