@@ -11,4 +11,5 @@ module.exports = class User {
         await newUser.save()
         return newUser['_doc']
     }
+
 }
