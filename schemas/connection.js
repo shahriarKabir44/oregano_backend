@@ -5,5 +5,5 @@ const connectionSchema = new mongoose.Schema({
     followeeId: { type: mongoose.Schema.Types.ObjectId }
 })
 
-let Connection = new mongoose.model('connection', connectionSchema)
+let Connection = mongoose.model('connection', connectionSchema)
 module.exports = Connection
