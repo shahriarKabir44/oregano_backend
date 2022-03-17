@@ -21,11 +21,16 @@ if (cluster.isMaster) {
 } else {
     startExpress();
 }
+let tag = require('./schemas/tags')
 function startExpress() {
 
     let app = express()
     app.use(cors())
-
+    app.get('/getAvailableTags', (req, res) => {
+        tag.find({}).distinct('tagName').then(data => {
+            res.send({ data: data })
+        })
+    })
     app.use('/graphql', graphqlHTTP.graphqlHTTP(req => (
         {
             schema: require('./graphql/graphql.schema'),

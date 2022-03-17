@@ -15,7 +15,7 @@ let User = require('../repositories/User')
 let Post = require('../repositories/Post')
 let user = new User()
 let post = new Post()
-
+let tags = require('../schemas/tags')
 
 const UserType = new GraphQLObjectType({
     name: "User",
@@ -32,7 +32,6 @@ const UserType = new GraphQLObjectType({
             type: PostType,
             async resolve(parent, args) {
                 let x = await post.findLatest(parent.id)
-                console.log(x);
                 return x[0]
             }
         }
@@ -57,8 +56,9 @@ const PostType = new GraphQLObjectType({
         time: { type: GraphQLFloat },
         rating: { type: GraphQLInt },
         currentCity: { type: GraphQLString },
-        isPopular: { type: GraphQLInt },
         tags: { type: GraphQLString },
+        postedOn: { type: GraphQLFloat },
+
         owner: {
             type: UserType,
             resolve(parent, args) {
@@ -82,7 +82,9 @@ const ConnectionType = new GraphQLObjectType({
         followee: {
             type: UserType,
             async resolve(parent, args) {
-                return user.findOne({ _id: parent.followeeId })
+                let x = await user.findOne({ _id: parent.followeeId })
+                console.log(parent.followeeId)
+                return x
             }
         }
     })
@@ -147,7 +149,7 @@ const TagType = new GraphQLObjectType({
         tagName: { type: GraphQLString },
         postId: { type: GraphQLID },
         findPost: {
-            type: new GraphQLList(PostType),
+            type: (PostType),
             async resolve(parent, args) {
                 return await post.findOne({ _id: parent.postId })
             }
@@ -245,12 +247,12 @@ const RootQueryType = new GraphQLObjectType({
             }
         },
         searchByTags: {
-            type: TagType,
+            type: new GraphQLList(TagType),
             args: {
                 tagName: { type: GraphQLString }
             },
             async resolve(parent, args) {
-                return await tags.find({ tagName: parent.tagName })
+                return await tags.find({ tagName: args.tagName })
             }
         },
         getFollowers: {
@@ -268,7 +270,8 @@ const RootQueryType = new GraphQLObjectType({
                 followerId: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await connection.find({ followerId: args.followerId })
+                let x = await connection.find({ followerId: args.followerId })
+                return x
             }
         },
     }
@@ -299,7 +302,6 @@ module.exports = new GraphQLSchema({
                 },
                 async resolve(parent, args) {
                     let data = await post.createPost(args)
-                    console.log(data)
                     return data
                 }
             },
