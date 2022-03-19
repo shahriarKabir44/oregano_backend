@@ -10,7 +10,7 @@ module.exports = class Post {
     async createPost(data) {
         let newPost = new this.postSchema(data)
         await newPost.save()
-        return newPost['_doc']
+        return newPost
 
     }
     async findOne(query) {

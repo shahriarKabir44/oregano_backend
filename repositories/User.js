@@ -9,7 +9,7 @@ module.exports = class User {
     async createUser(data) {
         let newUser = new this.userSchema(data)
         await newUser.save()
-        return newUser['_doc']
+        return newUser
     }
 
 }

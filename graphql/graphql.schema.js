@@ -16,7 +16,7 @@ let Post = require('../repositories/Post')
 let user = new User()
 let post = new Post()
 let tags = require('../schemas/tags')
-
+let Order = require('../schemas/order')
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
@@ -83,7 +83,6 @@ const ConnectionType = new GraphQLObjectType({
             type: UserType,
             async resolve(parent, args) {
                 let x = await user.findOne({ _id: parent.followeeId })
-                console.log(parent.followeeId)
                 return x
             }
         }
@@ -94,15 +93,18 @@ const OrderType = new GraphQLObjectType({
     name: "Order",
     fields: () => ({
         id: { type: GraphQLID },
-        drop_lat: { type: GraphQLInt },
-        drop_long: { type: GraphQLInt },
+        drop_lat: { type: GraphQLFloat },
+        drop_long: { type: GraphQLFloat },
         dropLocationGeocode: { type: GraphQLString },
         buyerId: { type: GraphQLID },
         sellerId: { type: GraphQLID },
         riderId: { type: GraphQLID },
         status: { type: GraphQLInt },
-        charge: { type: GraphQLInt },
+        charge: { type: GraphQLFloat },
         time: { type: GraphQLFloat },
+        pickupLat: { type: GraphQLFloat },
+        pickupLong: { type: GraphQLFloat },
+        pickupLocationGeocode: { type: GraphQLString },
         buyer: {
             type: UserType,
             async resolve(parent, args) {
@@ -323,20 +325,24 @@ module.exports = new GraphQLSchema({
             createOrder: {
                 type: OrderType,
                 args: {
-                    drop_lat: { type: GraphQLInt },
-                    drop_long: { type: GraphQLInt },
+                    drop_lat: { type: GraphQLFloat },
+                    drop_long: { type: GraphQLFloat },
                     dropLocationGeocode: { type: GraphQLString },
                     buyerId: { type: GraphQLID },
                     sellerId: { type: GraphQLID },
                     riderId: { type: GraphQLID },
                     status: { type: GraphQLInt },
-                    charge: { type: GraphQLInt },
+                    charge: { type: GraphQLFloat },
                     time: { type: GraphQLFloat },
+                    pickupLat: { type: GraphQLFloat },
+                    pickupLong: { type: GraphQLFloat },
+                    pickupLocationGeocode: { type: GraphQLString },
                 },
                 async resolve(parent, args) {
                     let newOrder = new Order(args)
                     await newOrder.save()
-                    return newOrder['_doc']
+
+                    return newOrder
                 }
             },
             createOrderItem: {
@@ -345,11 +351,14 @@ module.exports = new GraphQLSchema({
                     orderId: { type: GraphQLID },
                     postId: { type: GraphQLID },
                     amount: { type: GraphQLInt },
+                    pickupLat: { type: GraphQLFloat },
+                    pickupLong: { type: GraphQLFloat },
+                    pickupLocationGeocode: { type: GraphQLString },
                 },
                 async resolve(parent, args) {
                     let newOrderItem = new orderItem(args)
                     await newOrderItem.save()
-                    return newOrderItem['_doc']
+                    return newOrderItem
                 }
             },
             createNotification: {
@@ -365,7 +374,7 @@ module.exports = new GraphQLSchema({
                 async resolve(parent, args) {
                     let newNotification = new notification(args)
                     await newNotification.save()
-                    return newNotification['_doc']
+                    return newNotification
                 }
             },
             createConnection: {
@@ -377,7 +386,7 @@ module.exports = new GraphQLSchema({
                 async resolve(parent, args) {
                     let newConnection = new connection(args)
                     await newConnection.save()
-                    return newConnection['_doc']
+                    return newConnection
                 }
             }
         }
