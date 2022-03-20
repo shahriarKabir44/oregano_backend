@@ -36,7 +36,6 @@ function startExpress() {
     })
 
     app.post('/createNewOrder', async (req, res) => {
-        console.log(req.body);
         let newOrder = new order(req.body)
         await newOrder.save()
         res.send({ data: newOrder })

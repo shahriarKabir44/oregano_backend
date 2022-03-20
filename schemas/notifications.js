@@ -19,7 +19,7 @@ module.exports = Notification
 4: I am assigned for a delivery -> delivery => riderId=self.id && status==0
 5: I have to rate an item -> item.id
 
-note: a rider will be manually called over the prone number before assigning
+note: a rider will be manually called over the phone number before assigning
 
 todo:
 create a popup to request for rating when the app is opened 
