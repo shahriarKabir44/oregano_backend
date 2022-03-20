@@ -10,7 +10,9 @@ var orderSchema = new mongoose.Schema({
     status: { type: Number },
     charge: { type: Number },
     time: { type: Number },
-
+    pickupLat: { type: Number },
+    pickupLong: { type: Number },
+    pickupLocationGeocode: { type: String },
 })
 
 const Order = mongoose.model('Order', orderSchema)

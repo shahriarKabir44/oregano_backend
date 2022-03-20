@@ -22,14 +22,24 @@ if (cluster.isMaster) {
     startExpress();
 }
 let tag = require('./schemas/tags')
+let user = require('./schemas/user')
+let order = require('./schemas/order')
 function startExpress() {
 
     let app = express()
+    app.use(express.json())
     app.use(cors())
     app.get('/getAvailableTags', (req, res) => {
         tag.find({}).distinct('tagName').then(data => {
             res.send({ data: data })
         })
+    })
+
+    app.post('/createNewOrder', async (req, res) => {
+        console.log(req.body);
+        let newOrder = new order(req.body)
+        await newOrder.save()
+        res.send({ data: newOrder })
     })
     app.use('/graphql', graphqlHTTP.graphqlHTTP(req => (
         {

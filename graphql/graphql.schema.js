@@ -351,9 +351,7 @@ module.exports = new GraphQLSchema({
                     orderId: { type: GraphQLID },
                     postId: { type: GraphQLID },
                     amount: { type: GraphQLInt },
-                    pickupLat: { type: GraphQLFloat },
-                    pickupLong: { type: GraphQLFloat },
-                    pickupLocationGeocode: { type: GraphQLString },
+
                 },
                 async resolve(parent, args) {
                     let newOrderItem = new orderItem(args)
