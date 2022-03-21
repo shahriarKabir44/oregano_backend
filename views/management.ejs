@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+<body ng-app="myApp" ng-controller="myController"  ng-init="onInit()">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Oregano</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li class="active"><a href="#">Management</a></li>
+      <li><a href="#">Home</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="main" ></div>
+<div class="container">
+<div class="container">    
+    <div>
+      <h2>Pending deliveries</h2>
+    </div>        
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Action {{name}} </th>
+        </tr>
+      </thead>
+      <tbody >
+        <tr ng-repeat="x in orders">
+            <td>{{ x ._id }}</td>
+            <td>{{ x.pickupLocationGeocode }}</td>
+            <td>{{ x.dropLocationGeocode }}</td>
+            <td><button type="button" class="btn btn-primary">Find Rider</button></td>
+        </tr>
+      </tbody>
+    </table>
+</div>
+<script src="management.js"></script>
+</body>
+</html>

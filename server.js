@@ -30,12 +30,22 @@ function startExpress() {
     let app = express()
     app.use(express.json())
     app.use(cors())
+    app.set('view engine', 'ejs')
+    app.use(express.static('static'))
+    app.get('/management', (req, res) => {
+        res.render('management.ejs')
+    })
     app.get('/getAvailableTags', (req, res) => {
         tag.find({}).distinct('tagName').then(data => {
             res.send({ data: data })
         })
     })
-
+    app.get('/getPendingOrders', (req, res) => {
+        order.find({ status: 1 })
+            .then(data => {
+                res.send({ data: data })
+            })
+    })
     app.post('/createNewOrder', async (req, res) => {
         let newOrder = new order(req.body)
         let { notificationMessage, time, sellerId } = req.body;
