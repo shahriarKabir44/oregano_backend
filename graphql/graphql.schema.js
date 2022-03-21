@@ -17,6 +17,7 @@ let user = new User()
 let post = new Post()
 let tags = require('../schemas/tags')
 let Order = require('../schemas/order')
+let notification = require('../schemas/notifications')
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
@@ -55,10 +56,10 @@ const PostType = new GraphQLObjectType({
         stock: { type: GraphQLInt },
         time: { type: GraphQLFloat },
         rating: { type: GraphQLInt },
-        currentCity: { type: GraphQLString },
+        city: { type: GraphQLString },
         tags: { type: GraphQLString },
         postedOn: { type: GraphQLFloat },
-
+        district: { type: GraphQLString },
         owner: {
             type: UserType,
             resolve(parent, args) {
@@ -140,7 +141,7 @@ const NotificationType = new GraphQLObjectType({
         recipient: { type: GraphQLID },
         relatedSchemaId: { type: GraphQLID },
         time: { type: GraphQLFloat },
-        message: { type: GraphQLString },
+        message: { type: GraphQLString }
     })
 
 })
@@ -178,6 +179,15 @@ const OrderItemType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
     name: "rootQuery",
     fields: {
+        getOrderInfo: {
+            type: OrderType,
+            args: {
+                id: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                return Order.findById(args.id)
+            }
+        },
         getPosts: {
             type: new GraphQLList(PostType),
             args: {},

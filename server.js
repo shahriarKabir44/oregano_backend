@@ -24,6 +24,7 @@ if (cluster.isMaster) {
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
 let order = require('./schemas/order')
+let notification = require('./schemas/notifications')
 function startExpress() {
 
     let app = express()
@@ -37,7 +38,18 @@ function startExpress() {
 
     app.post('/createNewOrder', async (req, res) => {
         let newOrder = new order(req.body)
+        let { notificationMessage, time, sellerId } = req.body;
+        console.log(req.body);
         await newOrder.save()
+        let newNotification = new notification({
+            type: 1,
+            isSeen: 0,
+            recipient: sellerId,
+            relatedSchemaId: newOrder._id,
+            time: time,
+            message: notificationMessage,
+        })
+        await newNotification.save();
         res.send({ data: newOrder })
     })
     app.use('/graphql', graphqlHTTP.graphqlHTTP(req => (
