@@ -18,7 +18,6 @@ app.controller('myController', function ($scope, $http) {
         _id: "6238df5fb24e5846d5781542"
     }];
     $scope.httpReq = (url, toSend) => {
-        $scope.isAJAXBusy = 1
         var req = {
             method: toSend ? 'POST' : 'GET',
             url: url,
@@ -32,10 +31,62 @@ app.controller('myController', function ($scope, $http) {
 
     }
     $scope.onInit = function () {
-        $scope.httpReq('/getPendingOrders')
-            .then(({ data }) => {
-                //$scope.data = (data.data)
-                console.log(data.data);
+        $http({
+            method: 'GET',
+            url: '/getPendingOrders'
+        })
+            .then((data) => {
+                $scope.orders = (data.data.data)
+                console.log(data.data.data);
+            }, (failure) => {
+
             })
     }
 });
+
+
+const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQCF7XACxgwe_ENW1DFT6nzsgsiaMc';
+
+navigator.serviceWorker.register('sw.js', {
+    scope: '/',
+})
+
+navigator.serviceWorker.ready.then(async (register) => {
+    const subscription = await register.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertToUnit8Array(public_key),
+    })
+    var tm = await fetch('/subscribe', {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(subscription)
+    })
+})
+
+
+
+
+navigator.serviceWorker.onmessage = (event) => {
+    console.log(event);
+    // location.reload(true)
+
+};
+
+/**
+ * 
+ * @param {string} base64str 
+ */
+function convertToUnit8Array(base64str) {
+    const padding = '='.repeat((4 - (base64str.length % 4)) % 4)
+    const base64 = (base64str + padding).replace(/\-/g, '+').replace(/_/g, '/')
+    const rawData = atob(base64)
+    var outputArray = new Uint8Array(rawData.length)
+    for (let n = 0; n < rawData.length; n++) {
+        outputArray[n] = rawData.charCodeAt(n)
+    }
+
+    return outputArray
+}
