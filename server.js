@@ -58,6 +58,7 @@ function startExpress() {
     app.get('/getPendingOrders', (req, res) => {
         order.find({ status: 1 })
             .then(data => {
+                console.log(data);
                 res.send({ data: data })
             })
     })
