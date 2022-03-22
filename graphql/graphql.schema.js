@@ -166,6 +166,7 @@ const OrderItemType = new GraphQLObjectType({
         orderId: { type: GraphQLID },
         postId: { type: GraphQLID },
         amount: { type: GraphQLInt },
+        status: { type: GraphQLInt },
         post: {
             type: PostType,
             async resolve(parent, args) {
@@ -190,7 +191,9 @@ const RootQueryType = new GraphQLObjectType({
         },
         getPosts: {
             type: new GraphQLList(PostType),
-            args: {},
+            args: {
+
+            },
             resolve(parent, args) {
                 return post.getPosts({})
             }
@@ -211,6 +214,15 @@ const RootQueryType = new GraphQLObjectType({
             },
             async resolve(parent, args) {
                 return await post.findOne({ _id: args.id })
+            }
+        },
+        findLocalPosts: {
+            type: new GraphQLList(PostType),
+            args: {
+                district: { type: GraphQLString }
+            },
+            async resolve(parent, args) {
+                return await post.getPosts({ district: args.district })
             }
         },
         getCreatedPosts: {
@@ -364,7 +376,7 @@ module.exports = new GraphQLSchema({
 
                 },
                 async resolve(parent, args) {
-                    let newOrderItem = new orderItem(args)
+                    let newOrderItem = new orderItem({ ...args, status: 0 })
                     await newOrderItem.save()
                     return newOrderItem
                 }
