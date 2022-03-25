@@ -5,6 +5,19 @@ const graphqlHTTP = require('express-graphql');
 const cors = require('cors')
 require('dotenv').config()
 const cluster = require('cluster');
+const fs = require('fs')
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './ups');
+    },
+    filename: (req, file, cb) => {
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, uuidv4() + '-' + fileName)
+    }
+});
+
+let upload = multer()
 const mongoose = require('mongoose')
 
 const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQCF7XACxgwe_ENW1DFT6nzsgsiaMc'
@@ -46,6 +59,17 @@ function startExpress() {
         tag.find({}).distinct('tagName').then(data => {
             res.send({ data: data })
         })
+    })
+
+    app.post('/upload', upload.array(), (req, res) => {
+        //console.log((req.body));
+        fs.writeFile(__dirname + "/upload/out.jpeg", req.body.file.replace(/^data:image\/jpeg;base64,/, ""), 'base64', function (err) {
+            if (err) console.log(err);
+            fs.readFile(__dirname + "/upload/out.jpeg", function (err, data) {
+                if (err) throw err;
+                res.send({ data: "done" });
+            });
+        });
     })
 
     app.post('/subscribe', (req, res) => {
