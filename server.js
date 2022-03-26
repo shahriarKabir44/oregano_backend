@@ -44,7 +44,9 @@ if (cluster.isMaster) {
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
 let order = require('./schemas/order')
-let notification = require('./schemas/notifications')
+let notification = require('./schemas/notifications');
+const Post = require('./schemas/post');
+const path = require('path')
 function startExpress() {
     let clients = []
     let app = express()
@@ -52,6 +54,8 @@ function startExpress() {
     app.use(cors())
     app.set('view engine', 'ejs')
     app.use(express.static('static'))
+
+
     app.get('/management', (req, res) => {
         res.render('management.ejs')
     })
@@ -60,16 +64,27 @@ function startExpress() {
             res.send({ data: data })
         })
     })
-
+    app.post('/updatePostImages', (req, res) => {
+        console.log(req.body);
+        Post.findByIdAndUpdate(req.body.postId, { images: req.body.images })
+            .then(data => {
+                res.send({ data: 1 })
+            })
+    })
     app.post('/upload', upload.array(), (req, res) => {
-        //console.log((req.body));
-        fs.writeFile(__dirname + "/upload/out.jpeg", req.body.file.replace(/^data:image\/jpeg;base64,/, ""), 'base64', function (err) {
+        let { postid, postedby, postedon, type, filename } = req.headers
+        console.log(req.headers);
+        let dir = `${__dirname}/static/upload/${postedby}/${postedon}`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFile(__dirname + `/static/upload/${postedby}/${postedon}/${filename}.${type}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
             if (err) console.log(err);
-            fs.readFile(__dirname + "/upload/out.jpeg", function (err, data) {
-                if (err) throw err;
-                res.send({ data: "done" });
-            });
+            console.log(`http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}`);
+            res.send({ data: `http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}` });
+
         });
+        //res.send({ data: "test" })
     })
 
     app.post('/subscribe', (req, res) => {
@@ -77,6 +92,13 @@ function startExpress() {
         clients.push(JSON.stringify(subscription))
         //res.status(201).json({})
         res.send({ body: 'abcd' })
+    })
+
+    app.post('/createPost', async (req, res) => {
+        console.log(req.body);
+        let newPost = new Post(req.body)
+        await newPost.save()
+        res.send({ data: newPost })
     })
 
     app.get('/getPendingOrders', (req, res) => {
