@@ -65,7 +65,6 @@ function startExpress() {
         })
     })
     app.post('/updatePostImages', (req, res) => {
-        console.log(req.body);
         Post.findByIdAndUpdate(req.body.postId, { images: req.body.images })
             .then(data => {
                 res.send({ data: 1 })
@@ -73,14 +72,12 @@ function startExpress() {
     })
     app.post('/upload', upload.array(), (req, res) => {
         let { postid, postedby, postedon, type, filename } = req.headers
-        console.log(req.headers);
         let dir = `${__dirname}/static/upload/${postedby}/${postedon}`
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
         fs.writeFile(__dirname + `/static/upload/${postedby}/${postedon}/${filename}.${type}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
             if (err) console.log(err);
-            console.log(`http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}`);
             res.send({ data: `http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}` });
 
         });
@@ -95,7 +92,6 @@ function startExpress() {
     })
 
     app.post('/createPost', async (req, res) => {
-        console.log(req.body);
         let newPost = new Post(req.body)
         await newPost.save()
         res.send({ data: newPost })
@@ -104,12 +100,10 @@ function startExpress() {
     app.get('/getPendingOrders', (req, res) => {
         order.find({ status: 1 })
             .then(data => {
-                console.log(data);
                 res.send({ data: data })
             })
     })
     app.get('/acceptOrder/:orderId', (req, res) => {
-        console.log(req.params);
         order.findByIdAndUpdate(req.params.orderId, { status: 1 })
             .then(data => {
                 startSending()

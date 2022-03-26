@@ -22,7 +22,6 @@ app.controller('myController', function ($scope, $http) {
         })
             .then((data) => {
                 $scope.orders = (data.data.data)
-                console.log(data.data.data);
             }, (failure) => {
 
             })
@@ -55,7 +54,6 @@ navigator.serviceWorker.ready.then(async (register) => {
 
 
 navigator.serviceWorker.onmessage = (event) => {
-    console.log(event);
     location.reload(true)
 
 };
