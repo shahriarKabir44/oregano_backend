@@ -5,19 +5,10 @@ const graphqlHTTP = require('express-graphql');
 const cors = require('cors')
 require('dotenv').config()
 const cluster = require('cluster');
-const fs = require('fs')
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './ups');
-    },
-    filename: (req, file, cb) => {
-        const fileName = file.originalname.toLowerCase().split(' ').join('-');
-        cb(null, uuidv4() + '-' + fileName)
-    }
-});
 
-let upload = multer()
+
+
+
 const mongoose = require('mongoose')
 
 const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQCF7XACxgwe_ENW1DFT6nzsgsiaMc'
@@ -64,25 +55,8 @@ function startExpress() {
             res.send({ data: data })
         })
     })
-    app.post('/updatePostImages', (req, res) => {
-        Post.findByIdAndUpdate(req.body.postId, { images: req.body.images })
-            .then(data => {
-                res.send({ data: 1 })
-            })
-    })
-    app.post('/upload', upload.array(), (req, res) => {
-        let { postid, postedby, postedon, type, filename } = req.headers
-        let dir = `${__dirname}/static/upload/${postedby}/${postedon}`
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-        fs.writeFile(__dirname + `/static/upload/${postedby}/${postedon}/${filename}.${type}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
-            if (err) console.log(err);
-            res.send({ data: `http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}` });
 
-        });
-        //res.send({ data: "test" })
-    })
+
 
     app.post('/subscribe', (req, res) => {
         const subscription = req.body
@@ -91,11 +65,8 @@ function startExpress() {
         res.send({ body: 'abcd' })
     })
 
-    app.post('/createPost', async (req, res) => {
-        let newPost = new Post(req.body)
-        await newPost.save()
-        res.send({ data: newPost })
-    })
+    app.use('/posts', require('./routers/Post.controller'))
+
 
     app.get('/getPendingOrders', (req, res) => {
         order.find({ status: 1 })
