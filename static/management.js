@@ -26,6 +26,10 @@ app.controller('myController', function ($scope, $http) {
 
             })
     }
+    $scope.findRider = function (orderId) {
+        localStorage.setItem('orderId', orderId)
+        location.href = 'http://localhost:3000/management/rider_assignment'
+    }
 });
 
 
@@ -54,6 +58,7 @@ navigator.serviceWorker.ready.then(async (register) => {
 
 
 navigator.serviceWorker.onmessage = (event) => {
+    console.log(event);
     location.reload(true)
 
 };

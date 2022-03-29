@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <title>Rider assignment</title>
+</head>
+<body ng-app="riderApp" ng-controller="riderController"  ng-init="initApp()">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="/management">Oregano</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Management</a></li>
+          </ul>
+        </div>
+      </nav>
+    
+<div  class="container"><h3>Available riders list</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th> <th>Phone</th> <th>Current City</th> <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="rider in riderList">
+                <td> {{ (rider.facebookToken).name}} </td>
+                <td>{{rider.phone}}</td>
+                <td>{{rider.currentCity}}</td>
+                <td>
+                    <button class="btn btn-success" ng-click="assignRider(rider._id)">Assign</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+     <h3>Order details</h3>
+    <table class="table-striped">
+        <tr>
+            <th>Buyer name</th>
+            <td> {{orderInfo.buyerName}} </td>
+        </tr>
+        <tr>
+            <th>Seller name</th>
+            <td> {{orderInfo.sellerName}} </td>
+        </tr>
+        <tr>
+            <th>Pickup from</th>
+            <td> {{orderInfo.pickupFrom}} </td>
+        </tr>
+        <tr>
+            <th>Drop to</th>
+            <td> {{orderInfo.dropTo}} </td>
+        </tr>
+    </table></div>
+    
+</body>
+
+<script>
+    var app = angular.module('riderApp', []);
+    app.controller('riderController',($scope, $http) => {
+        $scope.riderList=[]
+        $scope.orderInfo={
+            buyerName:"",
+            sellerName:"",
+            pickupFrom:"",
+            dropTo:"",
+
+        }
+
+
+        
+
+        $scope.getRiders=async function(){
+            let {data}= await $http.get('http://localhost:3000/getRiderList')
+            console.log(data)
+            for(let rider of data.data){
+                rider.facebookToken=JSON.parse(rider.facebookToken)
+            }
+            console.log(data.data)
+            $scope.riderList=data.data
+        }
+
+        $scope.getOrderInfo= async function(){
+            let {data}= await $http.post('http://localhost:3000/graphql',JSON.stringify({
+                query:`query{
+                    getOrderInfo(id:"${localStorage.getItem('orderId')}"){
+                        drop_lat
+                        drop_long
+                        dropLocationGeocode
+                        pickupLat
+                        pickupLong
+                        pickupLocationGeocode
+                        buyerId
+                        sellerId
+                        charge
+                        seller{
+                        facebookToken
+                        phone
+                        
+                        }
+                        buyer{
+                        facebookToken
+                        phone
+                        }
+                    }
+                    }`
+            }))
+            let info=data.data.getOrderInfo
+            info.buyer.facebookToken=JSON.parse(info.buyer.facebookToken)
+            info.seller.facebookToken=JSON.parse(info.seller.facebookToken)
+            $scope.$apply(()=>{
+                $scope.orderInfo={
+                buyerName:info.buyer.facebookToken.name,
+                sellerName:info.seller.facebookToken.name, 
+                pickupFrom:info.pickupLocationGeocode,
+                dropTo:info.dropLocationGeocode,
+            }
+            })
+            console.log($scope.orderInfo)
+        }
+
+        $scope.assignRider=function(riderId){
+            $http.post('http://localhost:3000/assignRider',JSON.stringify({
+                orderId:localStorage.getItem('orderId'),
+                riderId:riderId
+            })).then(({data})=>{
+                location.href = 'http://localhost:3000/management'
+            })
+        }
+
+
+        $scope.initApp=function(){
+            $scope.getRiders()
+            $scope.getOrderInfo()
+        }
+    })
+</script>
+
+
+</html>

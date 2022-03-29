@@ -56,11 +56,30 @@ function startExpress() {
         })
     })
 
+    app.get('/management/rider_assignment', (req, res) => {
+        res.render('rider_assignment.ejs')
+    })
 
+
+
+    app.get('/getRiderList', (req, res) => {
+        user.find({ isRider: 1 })
+            .then(riderList => {
+                res.send({ data: riderList });
+            })
+
+    })
+
+    app.post('/assignRider', async (req, res) => {
+        console.log(req.body);
+        let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId })
+        res.send({ data: data });
+    })
 
     app.post('/subscribe', (req, res) => {
         const subscription = req.body
         clients.push(JSON.stringify(subscription))
+        console.log(subscription);
         //res.status(201).json({})
         res.send({ body: 'abcd' })
     })
@@ -69,7 +88,7 @@ function startExpress() {
 
 
     app.get('/getPendingOrders', (req, res) => {
-        order.find({ status: 1 })
+        order.find({ $and: [{ status: 1 }, { riderId: null }] })
             .then(data => {
                 res.send({ data: data })
             })
@@ -107,8 +126,14 @@ function startExpress() {
         }
     )));
     function startSending() {
-        webPush.sendNotification(JSON.parse('{"endpoint":"https://fcm.googleapis.com/fcm/send/dC_7cF1HIXY:APA91bEyD1IOvc9a96gK9K43361sLQZ8Wy_kMJ2jOUDAkawXMOMKxL_YF79W3Yn2PCvbjco7G1ASAMZvGud2ATz-yBJxDEcRZBTQ-iKobt1OTDpgwyIi8dYXfHqr4tOxDCWxw2kI3qro","expirationTime":null,"keys":{"p256dh":"BOHs1hmlckOURbrgmGFwsClG9QF4NCArF6yYKtnZsviNhxi7BNUGvIPaJP9DeMmv7C7w4a7mCD3RWMFFlgp0udU","auth":"DY5lPUcw8w8h6Jeb8MMMhQ"}}'), JSON.stringify({ title: 'New Order placed!' }))
-            .catch(err => console.log(err))
+        webPush.sendNotification({
+            endpoint: 'https://fcm.googleapis.com/fcm/send/cAQyTIMpLP8:APA91bErEpeI9Bcqh7c6rlIRMIIAj_n2yHn7jyJEOkzp4STB9zf6zy5JITkUr8v1f-diBXNPK1XsKqSpIKcXk-ELIwURBU0RM2wRth0QWdmFOe8Ql3YOcxwG6EyH62Ji0g1kDYUTQuMu',
+            expirationTime: null,
+            keys: {
+                p256dh: 'BCV8yKNWiwKCov1MbfpZrnnbGlQ8AXErSPJAPgx4o3prJMpJO2RaWh8SobnEC1s19XaJ1QOsk_trWnICHZQqta4',
+                auth: 'qfdiwjEuVyaPsuRM_BEcCw'
+            }
+        }).catch(err => console.log(err))
 
     }
     app.listen(process.env.PORT || 3000)

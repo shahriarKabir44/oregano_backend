@@ -1,21 +1,11 @@
-self.addEventListener('push', (e) => {
+self.addEventListener('push', async (e) => {
     var dat = JSON.parse(e.data.text())
     self.registration.showNotification(dat.title, {
-        body: "new order!"
+        body: "new order placed."
     })
-    // self.clients.matchAll({
-    //     includeUncontrolled: true,
-    //     type: 'window',
-    // }).then((clients) => {
-    //     if (clients && clients.length) {
-    //         clients[0].postMessage({
-    //             type: 'REPLY_COUNT',
-    //             count: "some_message",
-    //         });
-    //     }
-    // });
-    if (!e.clientId) return;
 
+    if (!e.clientId) return;
+    console.log(e);
     // Get the client.
     const client = await clients.get(e.clientId);
     // Exit early if we don't get the client.

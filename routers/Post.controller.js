@@ -32,6 +32,17 @@ PostController.post('/updatePostImages', (req, res) => {
 PostController.post('/createPost', async (req, res) => {
     let newPost = new Post(req.body)
     await newPost.save()
+    let newPostId = newPost._id
+    let tagList = JSON.parse(req.body.tags)
+    console.log(tagList);
+    for (let tag of tagList) {
+        let newTag = new Tags({
+            tagName: tag,
+            postId: newPostId,
+        })
+        await newTag.save()
+    }
+
     res.send({ data: newPost })
 })
 
