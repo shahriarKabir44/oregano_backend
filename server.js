@@ -78,14 +78,12 @@ function startExpress() {
 
     })
 
-    app.post('/assignRider', async (req, res) => {
-        let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId })
-        res.send({ data: data });
-    })
+
 
     app.post('/subscribe', (req, res) => {
         const subscription = req.body
         clients.push(JSON.stringify(subscription))
+        startSending()
         //res.status(201).json({})
         res.send({ body: 'abcd' })
     })

@@ -80,12 +80,13 @@
 
         $scope.getRiders=async function(){
             let {data}= await $http.get('http://localhost:3000/getRiderList')
-            console.log(data)
             for(let rider of data.data){
                 rider.facebookToken=JSON.parse(rider.facebookToken)
             }
             console.log(data.data)
-            $scope.riderList=data.data
+            $scope.$apply(()=>{
+                $scope.riderList=data.data
+            })
         }
 
         $scope.getOrderInfo= async function(){
@@ -128,7 +129,7 @@
         }
 
         $scope.assignRider=function(riderId){
-            $http.post('http://localhost:3000/assignRider',JSON.stringify({
+            $http.post('http://localhost:3000/orders/assignRider',JSON.stringify({
                 orderId:localStorage.getItem('orderId'),
                 riderId:riderId
             })).then(({data})=>{
