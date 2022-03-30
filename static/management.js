@@ -18,7 +18,7 @@ app.controller('myController', function ($scope, $http) {
     $scope.onInit = function () {
         $http({
             method: 'GET',
-            url: '/getPendingOrders'
+            url: '/orders/getPendingOrders'
         })
             .then((data) => {
                 $scope.orders = (data.data.data)
