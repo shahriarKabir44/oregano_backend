@@ -8,6 +8,21 @@ OrderController.get('/getPendingOrders', (req, res) => {
         })
 })
 
+OrderController.post('/markPickedUp', async (req, res) => {
+    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 4 })
+    let newNotification = new notification({
+        type: 3,
+        isSeen: 0,
+        recipient: req.body.orderId,
+        relatedSchemaId: req.body.buyerId,
+        time: (new Date()) * 1,
+        message: "A rider has picked up your order.",
+    })
+    await newNotification.save()
+    res.send({ data: 1 })
+
+})
+
 OrderController.post('/assignRider', async (req, res) => {
     let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId })
     let newNotification = new notification({

@@ -21,6 +21,7 @@ app.controller('myController', function ($scope, $http) {
             url: '/orders/getPendingOrders'
         })
             .then((data) => {
+                console.log(data)
                 $scope.orders = (data.data.data)
             }, (failure) => {
 
