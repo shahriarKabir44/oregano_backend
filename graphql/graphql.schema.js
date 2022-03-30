@@ -29,6 +29,22 @@ const personalInfoType = new GraphQLObjectType({
     })
 })
 
+const LocationInfoJSON = new GraphQLObjectType({
+    name: "LocationInfoJSON",
+    fields: () => ({
+        "city": { type: GraphQLString },
+        "country": { type: GraphQLString },
+        "district": { type: GraphQLString },
+        "isoCountryCode": { type: GraphQLString },
+        "name": { type: GraphQLString },
+        "postalCode": { type: GraphQLString },
+        "region": { type: GraphQLString },
+        "street": { type: GraphQLString },
+        "subregion": { type: GraphQLString },
+        "timezone": { type: GraphQLString },
+    })
+})
+
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
@@ -51,6 +67,13 @@ const UserType = new GraphQLObjectType({
             async resolve(parent, args) {
                 let x = await post.findLatest(parent.id)
                 return x[0]
+            }
+        },
+        locationInfo: { type: GraphQLString },
+        locationInfoJson: {
+            type: LocationInfoJSON,
+            resolve(parent, args) {
+                return JSON.parse(parent.locationInfo)
             }
         }
     })

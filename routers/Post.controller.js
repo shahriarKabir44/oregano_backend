@@ -34,7 +34,6 @@ PostController.post('/createPost', async (req, res) => {
     await newPost.save()
     let newPostId = newPost._id
     let tagList = JSON.parse(req.body.tags)
-    console.log(tagList);
     for (let tag of tagList) {
         let newTag = new Tags({
             tagName: tag,

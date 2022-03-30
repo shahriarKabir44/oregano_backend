@@ -7,7 +7,8 @@ var userSchema = new mongoose.Schema({
     currentLongitude: { type: Number },
     isRider: { type: Number },
     rating: { type: Number },
-    currentCity: { type: String }
+    currentCity: { type: String },
+    locationInfo: { type: String }
 })
 
 const User = mongoose.model('User', userSchema)

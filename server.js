@@ -57,6 +57,13 @@ function startExpress() {
         })
     })
 
+    app.post('/updateUserLocation', (req, res) => {
+        user.findByIdAndUpdate(req.body.userId, { locationInfo: req.body.locationInfo })
+            .then(data => {
+                res.send({ data: 1 })
+            })
+    })
+
     app.get('/management/rider_assignment', (req, res) => {
         res.render('rider_assignment.ejs')
     })
@@ -72,7 +79,6 @@ function startExpress() {
     })
 
     app.post('/assignRider', async (req, res) => {
-        console.log(req.body);
         let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId })
         res.send({ data: data });
     })
@@ -80,7 +86,6 @@ function startExpress() {
     app.post('/subscribe', (req, res) => {
         const subscription = req.body
         clients.push(JSON.stringify(subscription))
-        console.log(subscription);
         //res.status(201).json({})
         res.send({ body: 'abcd' })
     })
