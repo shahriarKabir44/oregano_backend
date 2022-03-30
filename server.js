@@ -52,6 +52,7 @@ function startExpress() {
     })
     app.get('/getAvailableTags', (req, res) => {
         tag.find({}).distinct('tagName').then(data => {
+
             res.send({ data: data })
         })
     })

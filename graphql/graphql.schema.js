@@ -18,10 +18,27 @@ let post = new Post()
 let tags = require('../schemas/tags')
 let Order = require('../schemas/order')
 let notification = require('../schemas/notifications')
+
+const personalInfoType = new GraphQLObjectType({
+    name: "PersonalInfo",
+    fields: () => ({
+
+        name: { type: GraphQLString },
+        profileImageURL: { type: GraphQLString },
+        coverPhotoURL: { type: GraphQLString }
+    })
+})
+
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
         facebookToken: { type: GraphQLString },
+        personalInfo: {
+            type: personalInfoType,
+            resolve(parent, args) {
+                return JSON.parse(parent.facebookToken)
+            }
+        },
         phone: { type: GraphQLString },
         currentLatitude: { type: GraphQLFloat },
         currentLongitude: { type: GraphQLFloat },
