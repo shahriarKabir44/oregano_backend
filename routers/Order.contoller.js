@@ -56,7 +56,7 @@ OrderController.post('/assignRider', async (req, res) => {
 OrderController.get('/acceptOrder/:orderId', (req, res) => {
     order.findByIdAndUpdate(req.params.orderId, { status: 1 })
         .then(data => {
-            startSending()
+            sendNotifications()
             return data
 
         })

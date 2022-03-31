@@ -32,6 +32,7 @@ if (cluster.isMaster) {
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
 let notification = require('./schemas/notifications')
+let admin = require('./schemas/admin')
 function startExpress() {
     let clients = []
     let app = express()
@@ -76,10 +77,12 @@ function startExpress() {
 
     app.post('/subscribe', (req, res) => {
         const subscription = req.body
-        clients.push(JSON.stringify(subscription))
-        startSending()
         //res.status(201).json({})
-        res.send({ body: 'abcd' })
+        admin.findByIdAndUpdate("62462a2c8f13da92a3d3b88a", { endpoint: JSON.stringify(subscription) })
+            .then(() => {
+                res.send({ body: 'abcd' })
+            })
+
     })
 
     app.get('/updateSeenStatus/:id', function (req, res) {

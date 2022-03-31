@@ -36,7 +36,7 @@ app.controller('myController', function ($scope, $http) {
 
 const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQCF7XACxgwe_ENW1DFT6nzsgsiaMc';
 
-navigator.serviceWorker.register('sw.js', {
+navigator.serviceWorker.register('serviceWorker.js', {
     scope: '/',
 })
 
