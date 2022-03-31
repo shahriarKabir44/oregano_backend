@@ -13,6 +13,7 @@ var orderSchema = new mongoose.Schema({
     pickupLat: { type: Number },
     pickupLong: { type: Number },
     pickupLocationGeocode: { type: String },
+    itemsCount: { type: Number }
 })
 
 const Order = mongoose.model('Order', orderSchema)

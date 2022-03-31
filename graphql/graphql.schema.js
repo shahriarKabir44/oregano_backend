@@ -146,6 +146,7 @@ const OrderType = new GraphQLObjectType({
         pickupLat: { type: GraphQLFloat },
         pickupLong: { type: GraphQLFloat },
         pickupLocationGeocode: { type: GraphQLString },
+        itemsCount: { type: GraphQLInt },
         buyer: {
             type: UserType,
             async resolve(parent, args) {
@@ -347,67 +348,7 @@ module.exports = new GraphQLSchema({
     mutation: new GraphQLObjectType({
         name: "RootMutation",
         fields: {
-            createPost: {
-                type: PostType,
-                args: {
-                    itemName: { type: GraphQLString },
-                    images: { type: GraphQLString },
-                    amountProduced: { type: GraphQLInt },
-                    unitPrice: { type: GraphQLInt },
-                    tags: { type: GraphQLString },
-                    unitType: { type: GraphQLString },
-                    country: { type: GraphQLString },
-                    district: { type: GraphQLString },
-                    city: { type: GraphQLString },
-                    latitude: { type: GraphQLFloat },
-                    longitude: { type: GraphQLFloat },
-                    postedOn: { type: GraphQLFloat },
-                    postedBy: { type: GraphQLID },
-                    tags: { type: GraphQLString }
-                },
-                async resolve(parent, args) {
-                    let data = await post.createPost(args)
-                    return data
-                }
-            },
-            createUser: {
-                type: UserType,
-                args: {
-                    facebookToken: { type: GraphQLString },
-                    phone: { type: GraphQLString },
-                    currentLatitude: { type: GraphQLFloat },
-                    currentLongitude: { type: GraphQLFloat },
-                    isRider: { type: GraphQLInt },
-                    rating: { type: GraphQLFloat },
-                    currentCity: { type: GraphQLString },
-                },
-                async resolve(parent, args) {
-                    return await user.createUser(args)
-                }
-            },
-            createOrder: {
-                type: OrderType,
-                args: {
-                    drop_lat: { type: GraphQLFloat },
-                    drop_long: { type: GraphQLFloat },
-                    dropLocationGeocode: { type: GraphQLString },
-                    buyerId: { type: GraphQLID },
-                    sellerId: { type: GraphQLID },
-                    riderId: { type: GraphQLID },
-                    status: { type: GraphQLInt },
-                    charge: { type: GraphQLFloat },
-                    time: { type: GraphQLFloat },
-                    pickupLat: { type: GraphQLFloat },
-                    pickupLong: { type: GraphQLFloat },
-                    pickupLocationGeocode: { type: GraphQLString },
-                },
-                async resolve(parent, args) {
-                    let newOrder = new Order(args)
-                    await newOrder.save()
 
-                    return newOrder
-                }
-            },
             createOrderItem: {
                 type: OrderItemType,
                 args: {
