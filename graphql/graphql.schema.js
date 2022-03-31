@@ -147,6 +147,8 @@ const OrderType = new GraphQLObjectType({
         pickupLong: { type: GraphQLFloat },
         pickupLocationGeocode: { type: GraphQLString },
         itemsCount: { type: GraphQLInt },
+        isPaid: { type: GraphQLInt },
+
         buyer: {
             type: UserType,
             async resolve(parent, args) {
@@ -300,7 +302,26 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await Order.find({ riderId: args.id })
+                return await Order.find({
+                    $and: [
+                        { riderId: args.id },
+                        { status: 1 }
+                    ]
+                })
+            }
+        },
+        getDeliveredOrders: {
+            type: new GraphQLList(OrderType),
+            args: {
+                id: { type: GraphQLID }
+            },
+            async resolve(parent, args) {
+                return await Order.find({
+                    $and: [
+                        { riderId: args.id },
+                        { status: { $gte: 5 } }
+                    ]
+                })
             }
         },
         getNotifications: {
