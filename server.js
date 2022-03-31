@@ -1,6 +1,5 @@
 const express = require('express')
 require('dotenv').config()
-const webPush = require('web-push')
 const graphqlHTTP = require('express-graphql');
 const cors = require('cors')
 require('dotenv').config()
@@ -11,14 +10,12 @@ const cluster = require('cluster');
 
 const mongoose = require('mongoose')
 
-const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQCF7XACxgwe_ENW1DFT6nzsgsiaMc'
-const private_key = 'eSJlzY26NrET8pybZj5IoUnpnAA4K_jWuDZ5hEy5q5M'
 
 
 mongoose.connect(process.env.mongodb_local,
     { useNewUrlParser: true, useUnifiedTopology: true })
 const totalCPUs = require('os').cpus().length;
-webPush.setVapidDetails('mailto:abc@def.com', public_key, private_key)
+
 if (cluster.isMaster) {
     for (let i = 0; i < totalCPUs; i++) {
         cluster.fork();
@@ -34,10 +31,6 @@ if (cluster.isMaster) {
 
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
-let order = require('./schemas/order')
-let notification = require('./schemas/notifications');
-const Post = require('./schemas/post');
-const path = require('path')
 function startExpress() {
     let clients = []
     let app = express()
@@ -98,16 +91,6 @@ function startExpress() {
             graphiql: true
         }
     )));
-    function startSending() {
-        webPush.sendNotification({
-            endpoint: 'https://fcm.googleapis.com/fcm/send/cAQyTIMpLP8:APA91bErEpeI9Bcqh7c6rlIRMIIAj_n2yHn7jyJEOkzp4STB9zf6zy5JITkUr8v1f-diBXNPK1XsKqSpIKcXk-ELIwURBU0RM2wRth0QWdmFOe8Ql3YOcxwG6EyH62Ji0g1kDYUTQuMu',
-            expirationTime: null,
-            keys: {
-                p256dh: 'BCV8yKNWiwKCov1MbfpZrnnbGlQ8AXErSPJAPgx4o3prJMpJO2RaWh8SobnEC1s19XaJ1QOsk_trWnICHZQqta4',
-                auth: 'qfdiwjEuVyaPsuRM_BEcCw'
-            }
-        }).catch(err => console.log(err))
 
-    }
     app.listen(process.env.PORT || 3000)
 }

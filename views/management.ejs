@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Management</title>
   <meta charset="utf-8">
@@ -10,44 +11,46 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
-<body ng-app="myApp" ng-controller="myController"  ng-init="onInit()">
 
-	 
+<body ng-app="myApp" ng-controller="myController" ng-init="onInit()">
 
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="/management">Oregano</a>
+
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/management">Oregano</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Management</a></li>
+      </ul>
     </div>
-    <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Management</a></li>
-    </ul>
-  </div>
-</nav>
+  </nav>
 
-<div class="main" ></div>
-<div class="container">
-<div class="container">    
-    <div>
-      <h2>Pending deliveries</h2>
-    </div>        
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>From</th>
-          <th>To</th>
-          <th>Action {{name}} </th>
-        </tr>
-      </thead>
-      <tbody >
-        <tr ng-repeat="x in orders">
+  <div class="main"></div>
+  <div class="container">
+    <div class="container">
+      <div>
+        <h2>Pending deliveries</h2>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Action </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="x in orders">
             <td>{{ x.pickupLocationGeocode }}</td>
             <td>{{ x.dropLocationGeocode }}</td>
             <td><button type="button" class="btn btn-primary" ng-click="findRider(x._id)">Find Rider</button></td>
-        </tr>
-      </tbody>
-    </table>
-</div>
-<script src="management.js"></script>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="management.js"></script>
 </body>
+
 </html>

@@ -1,6 +1,8 @@
 let OrderController = require('express').Router()
 let order = require('../schemas/order')
 let notification = require('../schemas/notifications')
+
+const sendNotifications = require('../utils/sendNotifications')
 OrderController.get('/getPendingOrders', (req, res) => {
     order.find({ $and: [{ status: 1 }, { riderId: null }] })
         .then(data => {
@@ -13,10 +15,25 @@ OrderController.post('/markPickedUp', async (req, res) => {
     let newNotification = new notification({
         type: 3,
         isSeen: 0,
-        recipient: req.body.orderId,
-        relatedSchemaId: req.body.buyerId,
+        recipient: req.body.buyerId,
+        relatedSchemaId: req.body.orderId,
         time: (new Date()) * 1,
         message: "A rider has picked up your order.",
+    })
+    await newNotification.save()
+    res.send({ data: 1 })
+
+})
+
+OrderController.post('/markDelivered', async (req, res) => {
+    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 5 })
+    let newNotification = new notification({
+        type: 6,
+        isSeen: 0,
+        recipient: req.body.buyerId,
+        relatedSchemaId: req.body.orderId,
+        time: (new Date()) * 1,
+        message: "Your order has arrived. Please pick up.",
     })
     await newNotification.save()
     res.send({ data: 1 })

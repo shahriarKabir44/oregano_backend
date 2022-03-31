@@ -18,6 +18,7 @@ module.exports = Notification
 3: Rider has picked up my order -> none
 4: I am assigned for a delivery -> delivery => riderId=self.id && status==0
 5: I have to rate an item -> item.id
+6: Order arrived
 
 note: a rider will be manually called over the phone number before assigning
 
