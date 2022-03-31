@@ -31,6 +31,7 @@ if (cluster.isMaster) {
 
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
+let notification = require('./schemas/notifications')
 function startExpress() {
     let clients = []
     let app = express()
@@ -79,6 +80,12 @@ function startExpress() {
         startSending()
         //res.status(201).json({})
         res.send({ body: 'abcd' })
+    })
+
+    app.get('/updateSeenStatus/:id', function (req, res) {
+        notification.findByIdAndUpdate(req.params.id, { isSeen: 1 }).then(function (data) {
+            res.send({ data: data });
+        })
     })
 
     app.use('/posts', require('./routers/Post.controller'))

@@ -181,7 +181,8 @@ const NotificationType = new GraphQLObjectType({
         recipient: { type: GraphQLID },
         relatedSchemaId: { type: GraphQLID },
         time: { type: GraphQLFloat },
-        message: { type: GraphQLString }
+        message: { type: GraphQLString },
+        id: { type: GraphQLID }
     })
 
 })
