@@ -28,10 +28,9 @@ status:
 0= order pending
 1= order approved
 2= order rejected
-3= rider assigned
 4= order picked up
 5= order delivered and pending payment
 6= payment completed 
-order status 6+ is shown in user's order history
+order status 5+ is shown in user's order history
 if rider is unavailable, the management team will cancel the order
 */

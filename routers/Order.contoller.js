@@ -1,7 +1,7 @@
 let OrderController = require('express').Router()
 let order = require('../schemas/order')
 let notification = require('../schemas/notifications')
-
+let orderItem = require('../schemas/orderItem')
 const sendNotifications = require('../utils/sendNotifications')
 OrderController.get('/getPendingOrders', (req, res) => {
     order.find({ $and: [{ status: 1 }, { riderId: null }] })
@@ -41,7 +41,7 @@ OrderController.post('/markDelivered', async (req, res) => {
 })
 
 OrderController.post('/assignRider', async (req, res) => {
-    let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId })
+    let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId }, { status: 3 })
     let newNotification = new notification({
         type: 4,
         isSeen: 0,
@@ -54,6 +54,7 @@ OrderController.post('/assignRider', async (req, res) => {
     res.send({ data: data });
 })
 OrderController.get('/acceptOrder/:orderId', (req, res) => {
+    console.log(req.params.orderId)
     order.findByIdAndUpdate(req.params.orderId, { status: 1 })
         .then(data => {
             sendNotifications()
@@ -80,5 +81,39 @@ OrderController.post('/createNewOrder', async (req, res) => {
     res.send({ data: newOrder })
 })
 
+OrderController.post('/rejectOrder', async (req, res) => {
+    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 2 })
+    let newNotification = new notification({
+        type: 7,
+        isSeen: 0,
+        recipient: req.body.buyerId,
+        relatedSchemaId: req.body.orderId,
+        time: (new Date()) * 1,
+        message: req.body.notificationMessage,
+    })
+    await newNotification.save()
+    res.send({ data: 1 })
+})
+
+OrderController.post('/rejectOrderItem', async (req, res) => {
+    let updatedOrderItem = await orderItem.findOneAndUpdate({
+        $and: [
+            { orderId: req.body.orderId },
+            { postId: req.body.postId }
+        ]
+    }, { status: 0 })
+    if (req.body.shouldGenerateNotification) {
+        let newNotification = new notification({
+            type: 2,
+            isSeen: 0,
+            recipient: req.body.buyerId,
+            relatedSchemaId: req.body.orderId,
+            time: (new Date()) * 1,
+            message: req.body.notificationMessage,
+        })
+        await newNotification.save()
+    }
+    res.send({ data: 1 })
+})
 
 module.exports = OrderController

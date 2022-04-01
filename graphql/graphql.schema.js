@@ -379,7 +379,7 @@ module.exports = new GraphQLSchema({
 
                 },
                 async resolve(parent, args) {
-                    let newOrderItem = new orderItem({ ...args, status: 0 })
+                    let newOrderItem = new orderItem({ ...args, status: 1 })
                     await newOrderItem.save()
                     return newOrderItem
                 }
