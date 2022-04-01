@@ -216,6 +216,12 @@ const OrderItemType = new GraphQLObjectType({
             async resolve(parent, args) {
                 return await post.findOne({ _id: parent.postId })
             }
+        },
+        orderDetails: {
+            type: OrderType,
+            resolve(parent, args) {
+                return Order.findById(parent.orderId)
+            }
         }
     })
 })
@@ -240,6 +246,15 @@ const RootQueryType = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 return post.getPosts({})
+            }
+        },
+        getOrderListOfAPost: {
+            type: new GraphQLList(OrderItemType),
+            args: {
+                postId: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                return orderItem.find({ postId: args.postId })
             }
         },
         findUser: {
