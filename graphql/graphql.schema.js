@@ -284,7 +284,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await Order.find({ buyerId: args.id })
+                return await Order.find({ buyerId: args.id }).sort({ time: -1 })
             }
         },
         getReceivedOrders: {
@@ -293,7 +293,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await Order.find({ sellerId: args.id })
+                return await Order.find({ sellerId: args.id }).sort({ time: -1 })
             }
         },
         getAssignedOrders: {
@@ -307,7 +307,7 @@ const RootQueryType = new GraphQLObjectType({
                         { riderId: args.id },
                         { status: 1 }
                     ]
-                })
+                }).sort({ time: -1 })
             }
         },
         getDeliveredOrders: {
@@ -321,7 +321,7 @@ const RootQueryType = new GraphQLObjectType({
                         { riderId: args.id },
                         { status: { $gte: 5 } }
                     ]
-                })
+                }).sort({ time: -1 })
             }
         },
         getNotifications: {
@@ -330,7 +330,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return notification.find({ recipient: args.id })
+                return await notification.find({ recipient: args.id }).sort({ time: -1 })
             }
         },
         searchByTags: {

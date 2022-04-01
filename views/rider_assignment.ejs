@@ -82,6 +82,7 @@
             let {data}= await $http.get('http://localhost:3000/getRiderList')
             for(let rider of data.data){
                 rider.facebookToken=JSON.parse(rider.facebookToken)
+                rider.locationInfo=JSON.parse(rider.locationInfo)
             }
             console.log(data.data)
             $scope.$apply(()=>{
@@ -123,6 +124,7 @@
                 sellerName:info.seller.facebookToken.name, 
                 pickupFrom:info.pickupLocationGeocode,
                 dropTo:info.dropLocationGeocode,
+
             }
             })
             console.log($scope.orderInfo)

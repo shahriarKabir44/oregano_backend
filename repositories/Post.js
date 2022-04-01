@@ -5,7 +5,7 @@ module.exports = class Post {
         this.postSchema = postSchema
     }
     async getPosts(query) {
-        return await this.postSchema.find(query)
+        return await this.postSchema.find(query).sort({ postedOn: -1 })
     }
     async createPost(data) {
         let newPost = new this.postSchema(data)
