@@ -249,6 +249,15 @@ const RootQueryType = new GraphQLObjectType({
                 return post.find({}).sort({ postedOn: -1 })
             }
         },
+        getPreviousOrders: {
+            type: new GraphQLList(OrderType),
+            args: {
+                buyerId: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                return Order.find({ buyerId: args.buyerId }).sort({ time: -1 })
+            }
+        },
         getOrderListOfAPost: {
             type: new GraphQLList(OrderItemType),
             args: {

@@ -1,3 +1,4 @@
+const Order = require('../schemas/order')
 const Rating = require('../schemas/rating')
 const UserTagRating = require('../schemas/user_tag_rating')
 
@@ -25,6 +26,25 @@ async function updateratingByTags(tagname, ownerId, rating) {
         return await UserTagRating.findByIdAndUpdate(existingData._id, { avg_rating: newRating })
     }
 }
+
+RatingController.post('/getUserRating', (req, res) => {
+    Rating.findOne({
+        $and: [
+            { postId: req.body.postId },
+            { ratedBy: req.body.userId }
+        ]
+    })
+        .then(data => {
+            res.send({ data: data })
+        })
+})
+
+RatingController.post('/updateOrder', (req, res) => {
+    Order.findByIdAndUpdate(req.body.id, { isRated: req.body.isRated })
+        .then(data => {
+            res.send({ data: 1 })
+        })
+})
 
 RatingController.post('/rateItem', async (req, res) => {
     let { postId, ownerId, ratedBy, tagLIst, rating } = req.body

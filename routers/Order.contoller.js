@@ -65,7 +65,7 @@ OrderController.get('/acceptOrder/:orderId', (req, res) => {
         })
 })
 OrderController.post('/createNewOrder', async (req, res) => {
-    let newOrder = new order(req.body)
+    let newOrder = new order({ ...req.body, isRated: 0 })
     let { notificationMessage, time, sellerId } = req.body;
     await newOrder.save()
     let newNotification = new notification({
