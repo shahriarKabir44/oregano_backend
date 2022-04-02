@@ -15,7 +15,7 @@ async function updateratingByTags(tagname, ownerId, rating) {
 
     if (!existingData) {
         let newUserTagRating = new UserTagRating({
-            ownerId: userId,
+            ownerId: ownerId,
             tagName: tagname,
             avg_rating: rating
         })
@@ -47,6 +47,7 @@ RatingController.post('/updateOrder', (req, res) => {
 })
 
 RatingController.post('/rateItem', async (req, res) => {
+    console.log(req.body)
     let { postId, ownerId, ratedBy, tagLIst, rating } = req.body
     let newRating = new Rating({
         postId: postId,
@@ -55,6 +56,7 @@ RatingController.post('/rateItem', async (req, res) => {
     })
     let promises = [newRating.save()]
     tagLIst = JSON.parse(tagLIst)
+    console.log(tagLIst)
     for (let tag of tagLIst) {
         promises.push(updateratingByTags(tag, ownerId, rating))
     }
