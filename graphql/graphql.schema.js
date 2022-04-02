@@ -100,6 +100,8 @@ const PostType = new GraphQLObjectType({
         tags: { type: GraphQLString },
         postedOn: { type: GraphQLFloat },
         district: { type: GraphQLString },
+        unitType: { type: GraphQLString },
+
         owner: {
             type: UserType,
             resolve(parent, args) {
@@ -391,7 +393,6 @@ module.exports = new GraphQLSchema({
                     orderId: { type: GraphQLID },
                     postId: { type: GraphQLID },
                     amount: { type: GraphQLInt },
-
                 },
                 async resolve(parent, args) {
                     let newOrderItem = new orderItem({ ...args, status: 1 })

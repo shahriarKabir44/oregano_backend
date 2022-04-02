@@ -9,6 +9,7 @@ const upload = multer()
 
 PostController.post('/upload', upload.array(), (req, res) => {
     let { postid, postedby, postedon, type, filename } = req.headers
+    console.log(req.headers);
     let dir = path.join(__dirname, '..', `static/upload/${postedby}/${postedon}`)
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
