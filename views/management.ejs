@@ -38,6 +38,7 @@
           <tr>
             <th>From</th>
             <th>To</th>
+            <th>Time</th>
             <th>Action </th>
           </tr>
         </thead>
@@ -45,6 +46,7 @@
           <tr ng-repeat="x in orders">
             <td>{{ x.pickupLocationGeocode }}</td>
             <td>{{ x.dropLocationGeocode }}</td>
+            <td> {{x.orderTime}} </td>
             <td><button type="button" class="btn btn-primary" ng-click="findRider(x._id)">Find Rider</button></td>
           </tr>
         </tbody>

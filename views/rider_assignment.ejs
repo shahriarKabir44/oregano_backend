@@ -34,7 +34,7 @@
             <tr ng-repeat="rider in riderList">
                 <td> {{ (rider.facebookToken).name}} </td>
                 <td>{{rider.phone}}</td>
-                <td>{{rider.currentCity}}</td>
+                <td>{{rider.currentPlace}}</td>
                 <td>
                     <button class="btn btn-success" ng-click="assignRider(rider._id)">Assign</button>
                 </td>
@@ -83,6 +83,8 @@
             for(let rider of data.data){
                 rider.facebookToken=JSON.parse(rider.facebookToken)
                 rider.locationInfo=JSON.parse(rider.locationInfo)
+                let locationInfo=`${rider.locationInfo .city}, ${rider.locationInfo .district}, ${rider.locationInfo .subregion}, ${rider.locationInfo .region}`
+                rider.currentPlace=locationInfo
             }
             console.log(data.data)
             $scope.$apply(()=>{

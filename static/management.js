@@ -22,6 +22,9 @@ app.controller('myController', function ($scope, $http) {
         })
             .then((data) => {
                 console.log(data)
+                for (let order of data.data.data) {
+                    order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
+                }
                 $scope.orders = (data.data.data)
             }, (failure) => {
 

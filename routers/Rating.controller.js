@@ -28,10 +28,11 @@ async function updateratingByTags(tagname, ownerId, rating) {
 }
 
 RatingController.post('/getUserRating', (req, res) => {
+    console.log(req.body)
     Rating.findOne({
         $and: [
             { postId: req.body.postId },
-            { ratedBy: req.body.userId }
+            { ratedBy: req.body.ratedBy }
         ]
     })
         .then(data => {
@@ -47,7 +48,6 @@ RatingController.post('/updateOrder', (req, res) => {
 })
 
 RatingController.post('/rateItem', async (req, res) => {
-    console.log(req.body)
     let { postId, ownerId, ratedBy, tagLIst, rating } = req.body
     let newRating = new Rating({
         postId: postId,
@@ -56,7 +56,6 @@ RatingController.post('/rateItem', async (req, res) => {
     })
     let promises = [newRating.save()]
     tagLIst = JSON.parse(tagLIst)
-    console.log(tagLIst)
     for (let tag of tagLIst) {
         promises.push(updateratingByTags(tag, ownerId, rating))
     }
