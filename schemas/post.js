@@ -14,6 +14,7 @@ var postSchema = new mongoose.Schema({
     longitude: { type: Number },
     postedOn: { type: Number },
     postedBy: { type: mongoose.Schema.Types.ObjectId },
+
 })
 
 const Post = mongoose.model('Post', postSchema)

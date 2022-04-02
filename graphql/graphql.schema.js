@@ -64,7 +64,7 @@ const UserType = new GraphQLObjectType({
         lastPost: {
             type: PostType,
             async resolve(parent, args) {
-                let data = await post.find({ postedBy: ownerId }).sort({ postedOn: -1 }).limit(1)
+                let data = await post.find({ postedBy: parent.id }).sort({ postedOn: -1 }).limit(1)
                 return data[0]
             }
         },

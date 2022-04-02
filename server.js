@@ -84,7 +84,7 @@ function startExpress() {
             })
 
     })
-
+    app.use('/ratings', require('./routers/Rating.controller'))
     app.get('/updateSeenStatus/:id', function (req, res) {
         notification.findByIdAndUpdate(req.params.id, { isSeen: 1 }).then(function (data) {
             res.send({ data: data });
