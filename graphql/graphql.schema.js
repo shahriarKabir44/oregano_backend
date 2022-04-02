@@ -11,10 +11,9 @@ const {
 
 
 } = graphql;
-let User = require('../repositories/User')
-let Post = require('../repositories/Post')
-let user = new User()
-let post = new Post()
+
+let user = require('../schemas/user')
+let post = require('../schemas/post')
 let tags = require('../schemas/tags')
 let Order = require('../schemas/order')
 let notification = require('../schemas/notifications')
@@ -65,8 +64,8 @@ const UserType = new GraphQLObjectType({
         lastPost: {
             type: PostType,
             async resolve(parent, args) {
-                let x = await post.findLatest(parent.id)
-                return x[0]
+                let data = await post.find({ postedBy: ownerId }).sort({ postedOn: -1 }).limit(1)
+                return data[0]
             }
         },
         locationInfo: { type: GraphQLString },
@@ -200,7 +199,7 @@ const TagType = new GraphQLObjectType({
         findPost: {
             type: (PostType),
             async resolve(parent, args) {
-                return await post.findOne({ _id: parent.postId })
+                return await post.findById(parent.postId)
             }
         }
     })
@@ -216,7 +215,7 @@ const OrderItemType = new GraphQLObjectType({
         post: {
             type: PostType,
             async resolve(parent, args) {
-                return await post.findOne({ _id: parent.postId })
+                return await post.findById(parent.postId)
             }
         },
         orderDetails: {
@@ -247,7 +246,7 @@ const RootQueryType = new GraphQLObjectType({
 
             },
             resolve(parent, args) {
-                return post.getPosts({})
+                return post.find({}).sort({ postedOn: -1 })
             }
         },
         getOrderListOfAPost: {
@@ -274,7 +273,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await post.findOne({ _id: args.id })
+                return await post.findById(args.id)
             }
         },
         findLocalPosts: {
@@ -283,7 +282,7 @@ const RootQueryType = new GraphQLObjectType({
                 district: { type: GraphQLString }
             },
             async resolve(parent, args) {
-                return await post.getPosts({ district: args.district })
+                return await post.find({ district: args.district })
             }
         },
         getCreatedPosts: {
@@ -292,7 +291,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await post.getPosts({ postedBy: args.id })
+                return await post.find({ postedBy: args.id })
             }
         },
         getCreatedOrders: {
