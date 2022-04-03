@@ -32,7 +32,9 @@ if (cluster.isMaster) {
 let tag = require('./schemas/tags')
 let user = require('./schemas/user')
 let notification = require('./schemas/notifications')
-let admin = require('./schemas/admin')
+let admin = require('./schemas/admin');
+const Tag = require('./schemas/tags');
+const Post = require('./schemas/post');
 function startExpress() {
     let clients = []
     let app = express()
@@ -101,6 +103,22 @@ function startExpress() {
             graphiql: true
         }
     )));
+    app.get('/clear', async (req, res) => {
+        let tags = await Tag.find({})
+        let promises = []
+        for (let tag of tags) {
+            promises.push(findAndDelete(tag))
+        }
+        await Promise.all(promises)
+        res.send({ data: 1 })
+    })
+
+    async function findAndDelete(tag) {
+        let post = await Post.findById(tag.postId)
+        if (!post) {
+            await Tag.findByIdAndDelete(tag._id)
+        }
+    }
 
     app.listen(process.env.PORT || 3000)
 }

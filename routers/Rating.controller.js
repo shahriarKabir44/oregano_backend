@@ -63,4 +63,11 @@ RatingController.post('/rateItem', async (req, res) => {
     res.send({ data: 1 })
 })
 
+RatingController.post('/getTagRatings', (req, res) => {
+    UserTagRating.find({ ownerId: req.body.ownerId })
+        .then(data => {
+            res.send({ data: data })
+        })
+})
+
 module.exports = RatingController

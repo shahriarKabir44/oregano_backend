@@ -294,6 +294,7 @@ const RootQueryType = new GraphQLObjectType({
                 return await post.find({ district: args.district })
             }
         },
+
         getCreatedPosts: {
             type: new GraphQLList(PostType),
             args: {
