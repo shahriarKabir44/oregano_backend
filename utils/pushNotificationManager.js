@@ -1,0 +1,15 @@
+const { Expo } = require('expo-server-sdk')
+let expo = new Expo()
+async function sendPushNotification(notification) {
+    let newMessage = {
+        to: notification.to,
+        sound: 'default',
+        body: notification.message,
+        data: { withSome: 'data' },
+    }
+    let chunks = expo.chunkPushNotifications([newMessage]);
+    await expo.sendPushNotificationsAsync(chunks[0])
+
+}
+
+module.exports = sendPushNotification 

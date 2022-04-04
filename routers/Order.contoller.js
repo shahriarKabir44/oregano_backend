@@ -3,6 +3,9 @@ let order = require('../schemas/order')
 let notification = require('../schemas/notifications')
 let orderItem = require('../schemas/orderItem')
 const sendNotifications = require('../utils/sendNotifications')
+const User = require('../schemas/user')
+const pushNotificationManager = require('../utils/pushNotificationManager')
+
 OrderController.get('/getPendingOrders', (req, res) => {
     order.find({ $and: [{ status: 1 }, { riderId: null }] })
         .then(data => {
@@ -11,47 +14,87 @@ OrderController.get('/getPendingOrders', (req, res) => {
 })
 
 OrderController.post('/markPickedUp', async (req, res) => {
-    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 4 })
-    let newNotification = new notification({
-        type: 3,
-        isSeen: 0,
-        recipient: req.body.buyerId,
-        relatedSchemaId: req.body.orderId,
-        time: (new Date()) * 1,
-        message: "A rider has picked up your order.",
-    })
-    await newNotification.save()
+    await Promise.all([
+        order.findByIdAndUpdate(req.body.orderId, { status: 4 }),
+        (async () => {
+            let newNotification = new notification({
+                type: 3,
+                isSeen: 0,
+                recipient: req.body.buyerId,
+                relatedSchemaId: req.body.orderId,
+                time: (new Date()) * 1,
+                message: "A rider has picked up your order.",
+            })
+            await newNotification.save()
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.buyerId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: notificationMessage
+            })
+        })()
+    ])
+
+
     res.send({ data: 1 })
 
 })
 
 OrderController.post('/markDelivered', async (req, res) => {
-    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 5 })
-    let newNotification = new notification({
-        type: 6,
-        isSeen: 0,
-        recipient: req.body.buyerId,
-        relatedSchemaId: req.body.orderId,
-        time: (new Date()) * 1,
-        message: "Your order has arrived. Please pick up.",
-    })
-    await newNotification.save()
+    await Promise.all([
+        order.findByIdAndUpdate(req.body.orderId, { status: 5 }),
+        (async () => {
+            let newNotification = new notification({
+                type: 6,
+                isSeen: 0,
+                recipient: req.body.buyerId,
+                relatedSchemaId: req.body.orderId,
+                time: (new Date()) * 1,
+                message: "Your order has arrived. Please pick up.",
+            })
+            await newNotification.save()
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.buyerId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: notificationMessage
+            })
+        })()
+    ])
+
+
     res.send({ data: 1 })
 
 })
 
 OrderController.post('/assignRider', async (req, res) => {
-    let data = await order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId }, { status: 3 })
-    let newNotification = new notification({
-        type: 4,
-        isSeen: 0,
-        recipient: req.body.riderId,
-        relatedSchemaId: req.body.orderId,
-        time: (new Date()) * 1,
-        message: "You have been assigned a new Delivery.",
-    })
-    await newNotification.save()
-    res.send({ data: data });
+
+    await Promise.all([
+        order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId }, { status: 3 }),
+        (async () => {
+            let newNotification = new notification({
+                type: 4,
+                isSeen: 0,
+                recipient: req.body.riderId,
+                relatedSchemaId: req.body.orderId,
+                time: (new Date()) * 1,
+                message: "You have been assigned a new Delivery.",
+            })
+            await newNotification.save()
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.riderId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: "You have been assigned a new Delivery."
+            })
+        })()])
+    res.send({ data: 1 });
 })
 OrderController.get('/acceptOrder/:orderId', (req, res) => {
     order.findByIdAndUpdate(req.params.orderId, { status: 1 })
@@ -65,8 +108,9 @@ OrderController.get('/acceptOrder/:orderId', (req, res) => {
         })
 })
 OrderController.post('/createNewOrder', async (req, res) => {
-    let newOrder = new order({ ...req.body, isRated: 0 })
     let { notificationMessage, time, sellerId } = req.body;
+
+    let newOrder = new order({ ...req.body, isRated: 0 })
     await newOrder.save()
     let newNotification = new notification({
         type: 1,
@@ -77,41 +121,76 @@ OrderController.post('/createNewOrder', async (req, res) => {
         message: notificationMessage,
     })
     await newNotification.save();
+
+    let receiver = await User.findById(req.body.sellerId)
+    let receiverToken = receiver.expoPushToken
+    await pushNotificationManager({
+        to: receiverToken,
+        message: notificationMessage
+    })
     res.send({ data: newOrder })
+
 })
 
 OrderController.post('/rejectOrder', async (req, res) => {
-    let updatedOrder = await order.findByIdAndUpdate(req.body.orderId, { status: 2 })
-    let newNotification = new notification({
-        type: 7,
-        isSeen: 0,
-        recipient: req.body.buyerId,
-        relatedSchemaId: req.body.orderId,
-        time: (new Date()) * 1,
-        message: req.body.notificationMessage,
-    })
-    await newNotification.save()
+    await Promise.all([
+        order.findByIdAndUpdate(req.body.orderId, { status: 2 }),
+        (async () => {
+            let newNotification = new notification({
+                type: 7,
+                isSeen: 0,
+                recipient: req.body.buyerId,
+                relatedSchemaId: req.body.orderId,
+                time: (new Date()) * 1,
+                message: req.body.notificationMessage,
+            })
+            await newNotification.save()
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.buyerId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: notificationMessage
+            })
+        })()
+    ])
+
     res.send({ data: 1 })
 })
 
 OrderController.post('/rejectOrderItem', async (req, res) => {
-    let updatedOrderItem = await orderItem.findOneAndUpdate({
-        $and: [
-            { orderId: req.body.orderId },
-            { postId: req.body.postId }
-        ]
-    }, { status: 0 })
-    if (req.body.shouldGenerateNotification) {
-        let newNotification = new notification({
-            type: 2,
-            isSeen: 0,
-            recipient: req.body.buyerId,
-            relatedSchemaId: req.body.orderId,
-            time: (new Date()) * 1,
-            message: req.body.notificationMessage,
-        })
-        await newNotification.save()
-    }
+    await Promise.all([
+        orderItem.findOneAndUpdate({
+            $and: [
+                { orderId: req.body.orderId },
+                { postId: req.body.postId }
+            ]
+        }, { status: 0 }),
+        (async () => {
+            if (req.body.shouldGenerateNotification) {
+                let newNotification = new notification({
+                    type: 2,
+                    isSeen: 0,
+                    recipient: req.body.buyerId,
+                    relatedSchemaId: req.body.orderId,
+                    time: (new Date()) * 1,
+                    message: req.body.notificationMessage,
+                })
+                await newNotification.save()
+            }
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.buyerId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: notificationMessage
+            })
+        })()
+    ])
+
+
     res.send({ data: 1 })
 })
 

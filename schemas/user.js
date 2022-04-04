@@ -8,7 +8,8 @@ var userSchema = new mongoose.Schema({
     isRider: { type: Number },
     rating: { type: Number },
     currentCity: { type: String },
-    locationInfo: { type: String }
+    locationInfo: { type: String },
+    expoPushToken: { type: String }
 })
 
 const User = mongoose.model('User', userSchema)

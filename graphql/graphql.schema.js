@@ -54,6 +54,8 @@ const UserType = new GraphQLObjectType({
                 return JSON.parse(parent.facebookToken)
             }
         },
+        expoPushToken: { type: GraphQLString },
+
         phone: { type: GraphQLString },
         currentLatitude: { type: GraphQLFloat },
         currentLongitude: { type: GraphQLFloat },

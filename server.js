@@ -43,6 +43,13 @@ function startExpress() {
     app.set('view engine', 'ejs')
     app.use(express.static('static'))
 
+    app.post('/updatePushToken', (req, res) => {
+
+        user.findByIdAndUpdate(req.body.userId, { expoPushToken: req.body.token })
+            .then(data => {
+                res.send({ data: 1 })
+            })
+    })
 
     app.get('/management', (req, res) => {
         res.render('management.ejs')
