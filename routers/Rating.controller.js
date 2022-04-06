@@ -47,19 +47,53 @@ RatingController.post('/updateOrder', (req, res) => {
         })
 })
 
-RatingController.post('/rateItem', async (req, res) => {
-    let { postId, ownerId, ratedBy, tagLIst, rating } = req.body
-    let newRating = new Rating({
-        postId: postId,
-        ratedBy: ratedBy,
-        rating: rating,
-    })
-    let promises = [newRating.save()]
-    tagLIst = JSON.parse(tagLIst)
-    for (let tag of tagLIst) {
-        promises.push(updateratingByTags(tag, ownerId, rating))
+async function updateRating(existingData, newRating, tagList, ownerId) {
+    let promises = [Rating.findByIdAndUpdate(existingData._id, { rating: newRating })]
+
+    for (let tag of tagList) {
+        promises.push((async () => {
+            let existingRatingInfo = await UserTagRating.findOne({
+                $and: [
+                    { tagName: tag },
+                    { ownerId: ownerId }
+                ]
+            })
+            let exisitingRating = existingRatingInfo.avg_rating
+            let newAvgRating = (exisitingRating - existingData.rating)
+            if (!newAvgRating) newAvgRating = newRating
+            else newRating /= 2
+            return UserTagRating.findByIdAndUpdate(existingRatingInfo._id, { avg_rating: newAvgRating })
+        })())
     }
     await Promise.all(promises)
+}
+
+RatingController.post('/rateItem', async (req, res) => {
+    let { postId, ownerId, ratedBy, tagLIst, rating } = req.body
+    tagLIst = JSON.parse(tagLIst)
+    let existingData = await Rating.findOne({
+        $and: [
+            { postId: postId },
+            { ratedBy: ratedBy },
+        ]
+    })
+    if (existingData) {
+        await updateRating(existingData, rating, tagLIst, ownerId)
+    }
+    else {
+        let newRating = new Rating({
+            postId: postId,
+            ratedBy: ratedBy,
+            rating: rating,
+        })
+        let promises = [newRating.save()]
+        for (let tag of tagLIst) {
+            promises.push(updateratingByTags(tag, ownerId, rating))
+        }
+        await Promise.all(promises)
+    }
+
+
     res.send({ data: 1 })
 })
 

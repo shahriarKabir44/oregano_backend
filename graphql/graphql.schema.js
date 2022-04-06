@@ -81,7 +81,9 @@ const UserType = new GraphQLObjectType({
 })
 
 let orderItem = require('../schemas/orderItem')
-let connection = require('../schemas/connection')
+let connection = require('../schemas/connection');
+const Tag = require('../schemas/tags');
+const Rating = require('../schemas/rating');
 
 const PostType = new GraphQLObjectType({
     name: "Post",
@@ -107,6 +109,27 @@ const PostType = new GraphQLObjectType({
             type: UserType,
             resolve(parent, args) {
                 return user.findOne({ _id: parent.postedBy })
+            }
+        }
+    })
+})
+
+const RatingType = new GraphQLObjectType({
+    name: "Rating",
+    fields: () => ({
+        postId: { type: GraphQLID },
+        ratedBy: { type: GraphQLID },
+        rating: { type: GraphQLInt },
+        getPost: {
+            type: PostType,
+            resolve(parent, args) {
+                return post.findById(parent.postId)
+            }
+        },
+        getUser: {
+            type: UserType,
+            resolve(parent, args) {
+                return user.findById(parent.ratedBy)
             }
         }
     })
@@ -267,6 +290,15 @@ const RootQueryType = new GraphQLObjectType({
             },
             resolve(parent, args) {
                 return orderItem.find({ postId: args.postId })
+            }
+        },
+        getPostRatings: {
+            type: new GraphQLList(RatingType),
+            args: {
+                postId: { type: GraphQLID }
+            },
+            resolve(parent, args) {
+                return Rating.find({ postId: args.postId })
             }
         },
         findUser: {
