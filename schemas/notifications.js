@@ -20,7 +20,7 @@ module.exports = Notification
 5: I have to rate an item -> item.id
 6: Order arrived
 7: rejected all
-
+8: someone has rated my post
 note: a rider will be manually called over the phone number before assigning
 
 todo:
