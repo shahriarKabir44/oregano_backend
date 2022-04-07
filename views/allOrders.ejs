@@ -156,8 +156,8 @@
 
 
   <div class="main"></div>
-  <div class="container">
-    <div class="container">
+  <div class=" ">
+    <div >
       <div>
         <h2>All orders</h2>
       </div>
@@ -172,9 +172,18 @@
             <th>Status</th>
             <th>Actions</th>
           </tr>
+          <tr>
+              <td> <input type="text" name="" placeholder="filter" ng-model="filter.buyerPhone" ng-change="updateFilter()"> </td>
+              <td> <input type="text" name="" placeholder="filter" ng-model="filter.sellerPhone" ng-change="updateFilter()"> </td>
+              <td> <input type="text" name="" placeholder="filter" ng-model="filter.pickupLocation" ng-change="updateFilter()"> </td>
+              <td> <input type="text" name="" placeholder="filter" ng-model="filter.dropLocation" ng-change="updateFilter()"> </td>
+              <td> <input type="date" name="" placeholder="filter" ng-model="filter.time" ng-change="updateFilter()"> </td>
+              <td> <input type="text" name="" placeholder="filter" ng-model="filter.statusText" ng-change="updateFilter()"> </td>
+
+          </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="order in orders">
+          <tr ng-repeat="order in temOrderList">
               <td>{{order.buyer.phone}}</td>
               <td>{{order.seller.phone}}</td>
             <td>{{ order.pickupLocationGeocode }}</td>

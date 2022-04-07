@@ -1,7 +1,28 @@
 var app = angular.module('myApp', []);
 
 app.controller('myController', function ($scope, $http) {
+
+    $scope.filter = {
+        buyerPhone: "",
+        sellerPhone: "",
+        pickupLocation: "",
+        dropLocation: "",
+        time: "",
+        statusText: ""
+    }
+    $scope.updateFilter = function () {
+        let tempData = $scope.orders
+        $scope.filter.time = $scope.filter.time * 1
+        tempData = tempData.filter(order => order.buyer.phone.startsWith($scope.filter.buyerPhone))
+        tempData = tempData.filter(order => order.seller.phone.startsWith($scope.filter.sellerPhone))
+        tempData = tempData.filter(order => order.time >= $scope.filter.time)
+        tempData = tempData.filter(order => order.pickupLocationGeocode.startsWith($scope.filter.pickupLocation))
+        tempData = tempData.filter(order => order.dropLocationGeocode.startsWith($scope.filter.dropLocation))
+        tempData = tempData.filter(order => order.statusText.startsWith($scope.filter.statusText))
+        $scope.temOrderList = tempData
+    }
     $scope.orders = [];
+    $scope.temOrderList = []
     $scope.selectedOrder = -1
     $scope.currentOrderId = -1
     $scope.takeAction = (orderStatus, orderId) => {
@@ -77,6 +98,7 @@ app.controller('myController', function ($scope, $http) {
                     }
                 }
                 $scope.orders = (data.data.getAllOrders)
+                $scope.temOrderList = data.data.getAllOrders
             }, (failure) => {
 
             })
