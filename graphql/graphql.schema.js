@@ -256,6 +256,13 @@ const OrderItemType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
     name: "rootQuery",
     fields: {
+        getAllOrders: {
+            type: new GraphQLList(OrderType),
+            args: {},
+            resolve(parent, args) {
+                return Order.find({})
+            }
+        },
         getOrderInfo: {
             type: OrderType,
             args: {

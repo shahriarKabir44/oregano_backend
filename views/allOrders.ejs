@@ -133,13 +133,13 @@
                         <th>Status</th>
                         <td> {{orderInfo.statusText}} </td>
                     </tr>
-                    <tr ng-if="orderInfo.status>=5">
+                    <tr ng-if="currentOrderStatus>=5">
                         <th>Delivery time:</th>
                         <td>{{orderInfo.deliveryTime}}</td>
                     </tr>
                 </table>
 
-                <button ng-if="orderInfo.status=5" ng-click="markPaid()" class="btn btn-success">Mark as paid</button>
+                <button ng-if="currentOrderStatus==5" ng-click="markPaid()" class="btn btn-success">Mark as paid</button>
             </div>
         </div>
   
@@ -164,8 +164,10 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>From</th>
-            <th>To</th>
+            <th>Buyer phone</th>
+            <th>Seller phone</th>
+            <th>Pickup location</th>
+            <th>Drop location</th>
             <th>Time</th>
             <th>Status</th>
             <th>Actions</th>
@@ -173,6 +175,8 @@
         </thead>
         <tbody>
           <tr ng-repeat="order in orders">
+              <td>{{order.buyer.phone}}</td>
+              <td>{{order.seller.phone}}</td>
             <td>{{ order.pickupLocationGeocode }}</td>
             <td>{{ order.dropLocationGeocode }}</td>
             <td> {{order.orderTime}} </td>

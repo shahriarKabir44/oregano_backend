@@ -13,6 +13,14 @@ ManagementController.get('/unAssignedDeliveries', (req, res) => {
 })
 
 
+ManagementController.post('/markPaid', (req, res) => {
+    Order.findByIdAndUpdate(req.body.orderId, { $set: { status: 6 } })
+        .then((data) => {
+            console.log(data);
+            res.send({ data: 1 })
+        })
+})
+
 ManagementController.get('/getAllOrders', (req, res) => {
     Order.find({})
         .then(data => {

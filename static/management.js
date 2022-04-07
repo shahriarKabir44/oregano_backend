@@ -21,13 +21,36 @@ app.controller('myController', function ($scope, $http) {
     }
 
     $scope.fetchAllOrders = () => {
-        $http({
-            method: 'GET',
-            url: '/management/getAllOrders'
-        })
-            .then((data) => {
-                console.log(data.data.data)
-                for (let order of data.data.data) {
+        $http.post('/graphql', JSON.stringify({
+            query: `query{
+                getAllOrders{
+                  id
+                  
+                  buyer{
+                    personalInfo{
+                      name
+                      
+                    }
+                    phone
+                    
+                  }
+                  seller{
+                    phone
+                    personalInfo{
+                      name
+                    }
+                  }
+                  time
+                  status
+                  pickupLocationGeocode
+                  dropLocationGeocode
+                }
+              }`
+        }))
+            .then(({ data }) => {
+                console.log(data.data.getAllOrders)
+                for (let order of data.data.getAllOrders) {
+                    order._id = order.id
                     order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
                     if (order.status == 1) {
                         order.statusText = "Pending rider"
@@ -53,7 +76,7 @@ app.controller('myController', function ($scope, $http) {
                         order.actionText = "View details"
                     }
                 }
-                $scope.orders = (data.data.data)
+                $scope.orders = (data.data.getAllOrders)
             }, (failure) => {
 
             })
@@ -63,10 +86,12 @@ app.controller('myController', function ($scope, $http) {
         sellerName: "",
         pickupFrom: "",
         dropTo: "",
-
+        status: 0
     }
+    $scope.currentOrderStatus = 0
     $scope.getOrderInfo = async function (orderId) {
         $scope.currentOrderId = orderId
+        $scope.orderInfo = {}
         let { data } = await $http.post('/graphql', JSON.stringify({
             query: `query{
                 getOrderInfo(id:"${orderId}"){
@@ -108,11 +133,10 @@ app.controller('myController', function ($scope, $http) {
                 }
                 }`
         }))
-        console.log(data.data.getOrderInfo);
+
         let info = data.data.getOrderInfo
         info.buyer.facebookToken = JSON.parse(info.buyer.facebookToken)
         info.seller.facebookToken = JSON.parse(info.seller.facebookToken)
-
         $scope.$apply(() => {
             $scope.orderInfo = {
                 buyerName: info.buyer.facebookToken.name,
@@ -121,14 +145,15 @@ app.controller('myController', function ($scope, $http) {
                 pickupFrom: info.pickupLocationGeocode,
                 dropTo: info.dropLocationGeocode,
                 sellerPhone: info.seller.phone,
-                status: info.status
             }
+            $scope.currentOrderStatus = info.status
             if (info.rider) {
                 info.rider.facebookToken = JSON.parse(info.rider.facebookToken)
                 $scope.orderInfo = {
                     ...$scope.orderInfo,
                     riderName: info.rider.facebookToken.name,
-                    riderPhone: info.rider.phone
+                    riderPhone: info.rider.phone,
+
                 }
             }
             if (info.status >= 5) {
@@ -160,6 +185,7 @@ app.controller('myController', function ($scope, $http) {
             } else if (info.status == 6) {
                 info.statusText = "Paid"
                 info.actionText = "View details"
+
             }
             $scope.orderInfo = {
                 ...$scope.orderInfo,
@@ -185,6 +211,7 @@ app.controller('myController', function ($scope, $http) {
                         $scope.status = 6
                         order.statusText = "Paid"
                         order.actionText = "View details"
+                        $('#orderDetailsModal').modal('hide')
                         break
                     }
                 }
@@ -213,7 +240,7 @@ app.controller('myController', function ($scope, $http) {
 
 
     $scope.assignRider = function (riderId) {
-        $http.post('http://localhost:3000/orders/assignRider', JSON.stringify({
+        $http.post('/orders/assignRider', JSON.stringify({
             orderId: $scope.currentOrderId,
             riderId: riderId
         })).then(({ data }) => {
