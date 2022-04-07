@@ -8,7 +8,7 @@ async function sendPushNotification(notification) {
         data: { withSome: 'data' },
     }
     let chunks = expo.chunkPushNotifications([newMessage]);
-    await expo.sendPushNotificationsAsync(chunks[0])
+    return expo.sendPushNotificationsAsync(chunks[0])
 
 }
 

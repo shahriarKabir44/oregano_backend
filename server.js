@@ -52,7 +52,7 @@ function startExpress() {
             })
     })
 
-
+    app.use('/connection', require('./routers/Connection.controller'))
     app.get('/getAvailableTags', (req, res) => {
         tag.find({}).distinct('tagName').then(data => {
 

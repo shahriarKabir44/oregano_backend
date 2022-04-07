@@ -1,6 +1,7 @@
 var mongoose = require('mongoose')
 
 var notificationSchema = new mongoose.Schema({
+
     type: { type: Number },
     isSeen: { type: Number },
     recipient: { type: mongoose.Schema.Types.ObjectId },
@@ -21,6 +22,8 @@ module.exports = Notification
 6: Order arrived
 7: rejected all
 8: someone has rated my post
+9: someone is following me 
+10: someeone I follow has posted 
 note: a rider will be manually called over the phone number before assigning
 
 todo:
