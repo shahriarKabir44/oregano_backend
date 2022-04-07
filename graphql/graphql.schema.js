@@ -174,7 +174,7 @@ const OrderType = new GraphQLObjectType({
         pickupLocationGeocode: { type: GraphQLString },
         itemsCount: { type: GraphQLInt },
         isPaid: { type: GraphQLInt },
-
+        deliveryTime: { type: GraphQLFloat },
         buyer: {
             type: UserType,
             async resolve(parent, args) {

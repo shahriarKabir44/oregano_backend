@@ -3,16 +3,17 @@ var app = angular.module('myApp', []);
 app.controller('myController', function ($scope, $http) {
     $scope.orders = [];
     $scope.selectedOrder = -1
-
+    $scope.currentOrderId = -1
     $scope.takeAction = (orderStatus, orderId) => {
         $scope.getOrderInfo(orderId)
         if (orderStatus == 1) {
-            $scope.initRiderAssignment()
+            $scope.getRiders()
             $('#riderAssignmentModal').modal('show');
         }
-        else if (orderStatus == 2) {
-
+        else if (orderStatus == 5 || orderStatus == 2 || orderStatus == 3 || orderStatus == 4 || orderStatus == 6) {
+            $('#orderDetailsModal').modal('show');
         }
+
     }
 
     $scope.onInit = function () {
@@ -25,7 +26,7 @@ app.controller('myController', function ($scope, $http) {
             url: '/management/getAllOrders'
         })
             .then((data) => {
-                console.log(data)
+                console.log(data.data.data)
                 for (let order of data.data.data) {
                     order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
                     if (order.status == 1) {
@@ -65,7 +66,8 @@ app.controller('myController', function ($scope, $http) {
 
     }
     $scope.getOrderInfo = async function (orderId) {
-        let { data } = await $http.post('http://localhost:3000/graphql', JSON.stringify({
+        $scope.currentOrderId = orderId
+        let { data } = await $http.post('/graphql', JSON.stringify({
             query: `query{
                 getOrderInfo(id:"${orderId}"){
                     drop_lat
@@ -78,6 +80,18 @@ app.controller('myController', function ($scope, $http) {
                     sellerId
                     charge
                     status
+                    deliveryTime
+                    orderedItems{
+                        amount
+                        post{
+                            id
+                            itemName
+                            images
+                            postedOn
+                            unitType
+                            unitPrice
+                        }
+                    }
                     seller{
                         facebookToken
                         phone
@@ -94,9 +108,11 @@ app.controller('myController', function ($scope, $http) {
                 }
                 }`
         }))
+        console.log(data.data.getOrderInfo);
         let info = data.data.getOrderInfo
         info.buyer.facebookToken = JSON.parse(info.buyer.facebookToken)
         info.seller.facebookToken = JSON.parse(info.seller.facebookToken)
+
         $scope.$apply(() => {
             $scope.orderInfo = {
                 buyerName: info.buyer.facebookToken.name,
@@ -104,8 +120,8 @@ app.controller('myController', function ($scope, $http) {
                 sellerName: info.seller.facebookToken.name,
                 pickupFrom: info.pickupLocationGeocode,
                 dropTo: info.dropLocationGeocode,
-                sellerPhone: info.seller.phone
-
+                sellerPhone: info.seller.phone,
+                status: info.status
             }
             if (info.rider) {
                 info.rider.facebookToken = JSON.parse(info.rider.facebookToken)
@@ -113,6 +129,13 @@ app.controller('myController', function ($scope, $http) {
                     ...$scope.orderInfo,
                     riderName: info.rider.facebookToken.name,
                     riderPhone: info.rider.phone
+                }
+            }
+            if (info.status >= 5) {
+                info.deliveryTime = `${(new Date(info.deliveryTime).toLocaleTimeString())}, ${(new Date(info.deliveryTime).toLocaleDateString())}`
+                $scope.orderInfo = {
+                    ...$scope.orderInfo,
+                    deliveryTime: info.deliveryTime
                 }
             }
             if (info.status == 1) {
@@ -143,6 +166,7 @@ app.controller('myController', function ($scope, $http) {
                 statusText: info.statusText,
                 actionText: info.actionText
             }
+            console.log($scope.orderInfo);
         })
 
     }
@@ -150,7 +174,22 @@ app.controller('myController', function ($scope, $http) {
 
 
 
-
+    $scope.markPaid = function () {
+        $scope.currentOrderId
+        $http.post('/management/markPaid', JSON.stringify({
+            orderId: $scope.currentOrderId
+        }))
+            .then(({ data }) => {
+                for (let order of $scope.orders) {
+                    if (order._id == $scope.currentOrderId) {
+                        $scope.status = 6
+                        order.statusText = "Paid"
+                        order.actionText = "View details"
+                        break
+                    }
+                }
+            })
+    }
 
 
 
@@ -163,7 +202,7 @@ app.controller('myController', function ($scope, $http) {
         for (let rider of data.data) {
             rider.facebookToken = JSON.parse(rider.facebookToken)
             rider.locationInfo = JSON.parse(rider.locationInfo)
-            let locationInfo = `${rider.locationInfo.city}, ${rider.locationInfo.district}, ${rider.locationInfo.subregion}, ${rider.locationInfo.region}`
+            let locationInfo = `${rider.locationInfo.city}, ${rider.locationInfo.district}, ${rider.locationInfo.subregion}, ${rider.locationInfo.region} `
             rider.currentPlace = locationInfo
         }
         console.log(data.data)
@@ -175,10 +214,18 @@ app.controller('myController', function ($scope, $http) {
 
     $scope.assignRider = function (riderId) {
         $http.post('http://localhost:3000/orders/assignRider', JSON.stringify({
-            orderId: localStorage.getItem('orderId'),
+            orderId: $scope.currentOrderId,
             riderId: riderId
         })).then(({ data }) => {
-            location.href = 'http://localhost:3000/management'
+            for (let order of $scope.orders) {
+                if (order._id == $scope.currentOrderId) {
+                    order.status = 3
+                    order.statusText = "Pending pickup"
+                    order.actionText = "View details"
+                    break
+                }
+            }
+            $('#riderAssignmentModal').modal('hide')
         })
     }
 
@@ -211,7 +258,6 @@ navigator.serviceWorker.ready.then(async (register) => {
 
 
 navigator.serviceWorker.onmessage = (event) => {
-    console.log(event);
     location.reload(true)
 
 };

@@ -29,14 +29,13 @@
 
 
   <!--Rider assignment modal-->
-  <div class="modal" id="riderAssignmentModal">
-    <div class="modal-dialog">
+  <div class="modal fade "id="riderAssignmentModal">
+    <div class="modal-dialog modal-xl" style="width:90vw" >
       <div class="modal-content">
   
         <!-- Modal Header -->
-        <div class="modal-header">
+        <div class="modal-header " style="display:flex;justify-content:space-between;align-items:center;align-content: center;">
           <h4 class="modal-title">Assign rider</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
   
         <!-- Modal body -->
@@ -60,7 +59,7 @@
                     </tbody>
                 </table>
                 <h3>Order details</h3>
-                <table class="table-striped">
+                <table class="table table-striped">
                     <tr>
                         <th>Buyer name</th>
                         <td> {{orderInfo.buyerName}} </td>
@@ -90,22 +89,20 @@
     </div>
   </div>
 
-  <div class="modal" id="orderDetailsModal">
-    <div class="modal-dialog">
+  <!--Order details modal-->
+  <div class="modal fade" id="orderDetailsModal">
+    <div class="modal-dialog"  style="width:90vw" >
       <div class="modal-content">
   
-        <!-- Modal Header -->
         <div class="modal-header">
           <h4 class="modal-title">Order Details</h4>
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
   
-        <!-- Modal body -->
         <div class="modal-body">
             <div  class="container"> 
                  
                 <h3>Order details</h3>
-                <table class="table-striped">
+                <table class=" table table-striped">
                     <tr>
                         <th>Buyer name</th>
                         <td> {{orderInfo.buyerName}} </td>
@@ -136,7 +133,13 @@
                         <th>Status</th>
                         <td> {{orderInfo.statusText}} </td>
                     </tr>
+                    <tr ng-if="orderInfo.status>=5">
+                        <th>Delivery time:</th>
+                        <td>{{orderInfo.deliveryTime}}</td>
+                    </tr>
                 </table>
+
+                <button ng-if="orderInfo.status=5" ng-click="markPaid()" class="btn btn-success">Mark as paid</button>
             </div>
         </div>
   
@@ -148,6 +151,8 @@
       </div>
     </div>
   </div>
+
+  
 
 
   <div class="main"></div>

@@ -14,8 +14,10 @@ OrderController.get('/getPendingOrders', (req, res) => {
 })
 
 OrderController.post('/markPickedUp', async (req, res) => {
+
+    sendNotifications()
     await Promise.all([
-        order.findByIdAndUpdate(req.body.orderId, { status: 4 }),
+        order.findByIdAndUpdate(req.body.orderId, { $set: { status: 4, deliveryTime: (new Date()) * 1 } }),
         (async () => {
             let newNotification = new notification({
                 type: 3,
@@ -32,10 +34,12 @@ OrderController.post('/markPickedUp', async (req, res) => {
             let receiverToken = receiver.expoPushToken
             await pushNotificationManager({
                 to: receiverToken,
-                message: notificationMessage
+                message: "A rider has picked up your order."
             })
         })()
-    ])
+    ]).catch(e => {
+        console.log(e);
+    })
 
 
     res.send({ data: 1 })
@@ -43,6 +47,7 @@ OrderController.post('/markPickedUp', async (req, res) => {
 })
 
 OrderController.post('/markDelivered', async (req, res) => {
+    sendNotifications()
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { status: 5 }),
         (async () => {
@@ -61,7 +66,7 @@ OrderController.post('/markDelivered', async (req, res) => {
             let receiverToken = receiver.expoPushToken
             await pushNotificationManager({
                 to: receiverToken,
-                message: notificationMessage
+                message: "Your order has arrived. Please pick up."
             })
         })()
     ])
@@ -74,7 +79,7 @@ OrderController.post('/markDelivered', async (req, res) => {
 OrderController.post('/assignRider', async (req, res) => {
 
     await Promise.all([
-        order.findByIdAndUpdate(req.body.orderId, { riderId: req.body.riderId }, { status: 3 }),
+        order.findByIdAndUpdate(req.body.orderId, { $set: { riderId: req.body.riderId, status: 3 } }),
         (async () => {
             let newNotification = new notification({
                 type: 4,
