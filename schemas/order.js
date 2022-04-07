@@ -27,11 +27,12 @@ status:
 status:
 
 0= order pending
-1= order approved
+1= order approved (if riderId==null: awaiting assignment) else awaiting pickup
 2= order rejected
-4= order picked up
-5= order delivered and pending payment
-6= payment completed 
+3=: rider assigned
+4= order picked up (awaiting delivery)
+5= order delivered and pending payment (awaiting payment)
+6= payment completed (paid)
 order status 5+ is shown in user's order history
 if rider is unavailable, the management team will cancel the order
 */

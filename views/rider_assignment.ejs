@@ -23,43 +23,44 @@
         </div>
       </nav>
     
-<div  class="container"><h3>Available riders list</h3>
-    <table class="table table-striped">
-        <thead>
+    <div  class="container"><h3>Available riders list</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th> <th>Phone</th> <th>Current City</th> <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="rider in riderList">
+                    <td> {{ (rider.facebookToken).name}} </td>
+                    <td>{{rider.phone}}</td>
+                    <td>{{rider.currentPlace}}</td>
+                    <td>
+                        <button class="btn btn-success" ng-click="assignRider(rider._id)">Assign</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <h3>Order details</h3>
+        <table class="table-striped">
             <tr>
-                <th>Name</th> <th>Phone</th> <th>Current City</th> <th>Action</th>
+                <th>Buyer name</th>
+                <td> {{orderInfo.buyerName}} </td>
             </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="rider in riderList">
-                <td> {{ (rider.facebookToken).name}} </td>
-                <td>{{rider.phone}}</td>
-                <td>{{rider.currentPlace}}</td>
-                <td>
-                    <button class="btn btn-success" ng-click="assignRider(rider._id)">Assign</button>
-                </td>
+            <tr>
+                <th>Seller name</th>
+                <td> {{orderInfo.sellerName}} </td>
             </tr>
-        </tbody>
-    </table>
-     <h3>Order details</h3>
-    <table class="table-striped">
-        <tr>
-            <th>Buyer name</th>
-            <td> {{orderInfo.buyerName}} </td>
-        </tr>
-        <tr>
-            <th>Seller name</th>
-            <td> {{orderInfo.sellerName}} </td>
-        </tr>
-        <tr>
-            <th>Pickup from</th>
-            <td> {{orderInfo.pickupFrom}} </td>
-        </tr>
-        <tr>
-            <th>Drop to</th>
-            <td> {{orderInfo.dropTo}} </td>
-        </tr>
-    </table></div>
+            <tr>
+                <th>Pickup from</th>
+                <td> {{orderInfo.pickupFrom}} </td>
+            </tr>
+            <tr>
+                <th>Drop to</th>
+                <td> {{orderInfo.dropTo}} </td>
+            </tr>
+        </table>
+    </div>
     
 </body>
 
@@ -74,10 +75,6 @@
             dropTo:"",
 
         }
-
-
-        
-
         $scope.getRiders=async function(){
             let {data}= await $http.get('http://localhost:3000/getRiderList')
             for(let rider of data.data){

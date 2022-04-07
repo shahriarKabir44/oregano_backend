@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Management</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="myController" ng-init="onInit()">
+
+
+
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/management">Oregano</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li  class="active"><a href="#">Management</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <!--Rider assignment modal-->
+  <div class="modal" id="riderAssignmentModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Assign rider</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div  class="container"><h3>Available riders list</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th> <th>Phone</th> <th>Current City</th> <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="rider in riderList">
+                            <td> {{ (rider.facebookToken).name}} </td>
+                            <td>{{rider.phone}}</td>
+                            <td>{{rider.currentPlace}}</td>
+                            <td>
+                                <button class="btn btn-success" ng-click="assignRider(rider._id)">Assign</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h3>Order details</h3>
+                <table class="table-striped">
+                    <tr>
+                        <th>Buyer name</th>
+                        <td> {{orderInfo.buyerName}} </td>
+                    </tr>
+                    <tr>
+                        <th>Seller name</th>
+                        <td> {{orderInfo.sellerName}} </td>
+                    </tr>
+                    <tr>
+                        <th>Pickup from</th>
+                        <td> {{orderInfo.pickupFrom}} </td>
+                    </tr>
+                    <tr>
+                        <th>Drop to</th>
+                        <td> {{orderInfo.dropTo}} </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="orderDetailsModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Order Details</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <div  class="container"> 
+                 
+                <h3>Order details</h3>
+                <table class="table-striped">
+                    <tr>
+                        <th>Buyer name</th>
+                        <td> {{orderInfo.buyerName}} </td>
+                        <th>Buyer phone</th>
+                        <td> {{orderInfo.buyerPhone}} </td>
+                    </tr>
+                    <tr>
+                        <th>Seller name</th>
+                        <td> {{orderInfo.sellerName}} </td>
+                        <th>Seller phone</th>
+                        <td> {{orderInfo.sellerPhone}} </td>
+                    </tr>
+                    <tr ng-if="orderInfo.riderName">
+                        <th>Rider name</th>
+                        <td> {{orderInfo.riderName}} </td>
+                        <th>Rider phone</th>
+                        <td> {{orderInfo.riderPhone}} </td>
+                    </tr>
+                    <tr>
+                        <th>Pickup from</th>
+                        <td> {{orderInfo.pickupFrom}} </td>
+                    </tr>
+                    <tr>
+                        <th>Drop to</th>
+                        <td> {{orderInfo.dropTo}} </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td> {{orderInfo.statusText}} </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+  
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+  
+      </div>
+    </div>
+  </div>
+
+
+  <div class="main"></div>
+  <div class="container">
+    <div class="container">
+      <div>
+        <h2>All orders</h2>
+      </div>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>From</th>
+            <th>To</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="order in orders">
+            <td>{{ order.pickupLocationGeocode }}</td>
+            <td>{{ order.dropLocationGeocode }}</td>
+            <td> {{order.orderTime}} </td>
+            <td>{{order.statusText}}</td>
+            <td><button type="button" class="btn btn-primary"  ng-click="takeAction(order.status,order._id)">{{order.actionText}}</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <script src="management.js" >
+    </script>
+</body>
+
+</html>

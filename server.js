@@ -36,13 +36,14 @@ let admin = require('./schemas/admin');
 const Tag = require('./schemas/tags');
 const Post = require('./schemas/post');
 function startExpress() {
-    let clients = []
+
     let app = express()
     app.use(express.json())
     app.use(cors())
     app.set('view engine', 'ejs')
     app.use(express.static('static'))
 
+    app.use('/management', require('./routers/Management.controller'))
     app.post('/updatePushToken', (req, res) => {
 
         user.findByIdAndUpdate(req.body.userId, { expoPushToken: req.body.token })
@@ -51,9 +52,7 @@ function startExpress() {
             })
     })
 
-    app.get('/management', (req, res) => {
-        res.render('management.ejs')
-    })
+
     app.get('/getAvailableTags', (req, res) => {
         tag.find({}).distinct('tagName').then(data => {
 
