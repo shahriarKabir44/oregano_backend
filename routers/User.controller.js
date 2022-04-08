@@ -2,9 +2,7 @@ const Facebook = require('../schemas/facebook')
 const OTP = require('../schemas/otp')
 const User = require('../schemas/user')
 const UserController = require('express').Router()
-const accountSid = 'AC1b9e823e90c985c91ebfedb3329c2d85';
-const authToken = '12cf0e610249e1a2e048e9392bb49e5a';
-const client = require('twilio')(accountSid, authToken);
+const client = require('twilio')(process.env.accountSid, process.env.authToken);
 
 UserController.post('/isRegistered', (req, res) => {
     Facebook.findOne({ facebookId: req.body.facebookId })
@@ -50,7 +48,7 @@ UserController.post('/requestOTP', (req, res) => {
                     client.messages
                         .create({
                             body: `Your account verification code is ${newOTPNumber}`,
-                            messagingServiceSid: 'MGf265058d96cb57b44bc5fa5295f02496',
+                            messagingServiceSid: process.env.messagingServiceSid,
                             to: `+88${req.body.phone}`
                         })
                         .then(message => console.log(message.sid))
