@@ -77,19 +77,21 @@ UserController.post('/confirmOTP', (req, res) => {
                     { phone: req.body.phone },
                     { otp: req.body.otp }
                 ]
-            })
-            newUser.save()
-                .then(() => {
-                    let newData = { ...newUser._doc }
-                    console.log(newData);
-                    let newFacebookConnection = new Facebook({
-                        facebookId: req.body.facebookId,
-                        userId: newData._id
+            }).then(() => {
+                newUser.save()
+                    .then(() => {
+                        let newData = { ...newUser._doc }
+                        console.log(newData);
+                        let newFacebookConnection = new Facebook({
+                            facebookId: req.body.facebookId,
+                            userId: newData._id
+                        })
+                        newFacebookConnection.save()
+                        newData.id = newData._id;
+                        res.send({ data: newData })
                     })
-                    newFacebookConnection.save()
-                    newData.id = newData._id;
-                    res.send({ data: newData })
-                })
+            })
+
         }
     })
 })

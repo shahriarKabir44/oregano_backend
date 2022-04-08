@@ -11,7 +11,6 @@ ConnectionController.post('/isFollowing', (req, res) => {
             { followerId: req.body.followerId },
         ]
     }).then(data => {
-        console.log(req.body)
         res.send({ data: data != null })
     })
 })
