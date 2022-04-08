@@ -8,6 +8,8 @@ UserController.post('/isRegistered', (req, res) => {
             if (data) {
                 User.findById(data.userId)
                     .then(user => {
+                        //  user.facebookToken = JSON.parse(user.facebookToken)
+                        user.id = user._id
                         res.send({ data: user })
                     })
             }
