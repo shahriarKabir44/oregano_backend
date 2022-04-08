@@ -60,6 +60,8 @@ function startExpress() {
         })
     })
 
+    app.use('/user', require('./routers/User.controller'))
+
     app.post('/updateUserLocation', (req, res) => {
         user.findByIdAndUpdate(req.body.userId, { locationInfo: req.body.locationInfo })
             .then(data => {
