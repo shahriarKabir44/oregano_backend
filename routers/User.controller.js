@@ -94,6 +94,13 @@ UserController.post('/requestOTP', (req, res) => {
         })
 })
 
+UserController.post('/registerRider', (req, res) => {
+    User.findByIdAndUpdate(req.body.userId, { $set: { isRider: 1 } })
+        .then(data => {
+            res.send({ data: data })
+        })
+})
+
 UserController.post('/confirmOTP', (req, res) => {
     OTP.findOne({
         $and: [
