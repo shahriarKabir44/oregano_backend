@@ -69,7 +69,6 @@ app.controller('myController', function ($scope, $http) {
               }`
         }))
             .then(({ data }) => {
-                console.log(data.data.getAllOrders)
                 for (let order of data.data.getAllOrders) {
                     order._id = order.id
                     order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
@@ -214,7 +213,6 @@ app.controller('myController', function ($scope, $http) {
                 statusText: info.statusText,
                 actionText: info.actionText
             }
-            console.log($scope.orderInfo);
         })
 
     }
@@ -254,7 +252,6 @@ app.controller('myController', function ($scope, $http) {
             let locationInfo = `${rider.locationInfo.city}, ${rider.locationInfo.district}, ${rider.locationInfo.subregion}, ${rider.locationInfo.region} `
             rider.currentPlace = locationInfo
         }
-        console.log(data.data)
         $scope.$apply(() => {
             $scope.riderList = data.data
         })

@@ -439,8 +439,9 @@ const RootQueryType = new GraphQLObjectType({
                 let localUsers = await user.find({ region: args.region })
                 let connections = await connection.find({ followerId: args.userId })
                 for (let connection of connections) {
-                    localUsers = localUsers.filter(user => user._id == connection.followeeId)
+                    localUsers = localUsers.filter(user => user._id != connection.followeeId)
                 }
+                localUsers = localUsers.filter(user => user._id != args.userId)
                 return localUsers
             }
         },

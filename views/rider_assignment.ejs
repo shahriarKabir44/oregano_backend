@@ -83,7 +83,6 @@
                 let locationInfo=`${rider.locationInfo .city}, ${rider.locationInfo .district}, ${rider.locationInfo .subregion}, ${rider.locationInfo .region}`
                 rider.currentPlace=locationInfo
             }
-            console.log(data.data)
             $scope.$apply(()=>{
                 $scope.riderList=data.data
             })
@@ -126,7 +125,6 @@
 
             }
             })
-            console.log($scope.orderInfo)
         }
 
         $scope.assignRider=function(riderId){

@@ -11,7 +11,6 @@ const upload = multer()
 
 UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
     let { userid, type, filename } = req.headers
-    console.log(req.headers)
     let dir = path.join(__dirname, '..', `static/userImages/${userid}`)
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
@@ -23,7 +22,6 @@ UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
             const newURL = `http://192.168.43.90:3000/userImages/${userid}/${newFileName}`
             User.findById(userid)
                 .then(userData => {
-                    console.log(userid)
                     let fbToken = JSON.parse(userData.facebookToken)
                     fbToken.coverPhotoURL = newURL
                     User.findByIdAndUpdate(userid, { $set: { facebookToken: JSON.stringify(fbToken) } })
@@ -128,7 +126,6 @@ UserController.post('/confirmOTP', (req, res) => {
                 newUser.save()
                     .then(() => {
                         let newData = { ...newUser._doc }
-                        console.log(newData);
                         let newFacebookConnection = new Facebook({
                             facebookId: req.body.facebookId,
                             userId: newData._id

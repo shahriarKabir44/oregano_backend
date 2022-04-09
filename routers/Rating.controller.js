@@ -29,7 +29,6 @@ async function updateratingByTags(tagname, ownerId, rating) {
 }
 
 RatingController.post('/getUserRating', (req, res) => {
-    console.log(req.body)
     Rating.findOne({
         $and: [
             { postId: req.body.postId },
