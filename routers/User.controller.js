@@ -38,10 +38,7 @@ UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
     });
 })
 
-UserController.post('/updateCoverPhoto', (req, res) => {
-    console.log(req.body)
 
-})
 
 UserController.post('/isRegistered', (req, res) => {
     Facebook.findOne({ facebookId: req.body.facebookId })
@@ -112,6 +109,7 @@ UserController.post('/confirmOTP', (req, res) => {
         else {
             let newUser = new User({
                 phone: req.body.phone,
+                name: req.body.user.name,
                 facebookToken: JSON.stringify({
                     name: req.body.user.name,
                     profileImageURL: req.body.user.profileImageURL,

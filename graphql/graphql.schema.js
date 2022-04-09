@@ -54,8 +54,9 @@ const UserType = new GraphQLObjectType({
                 return JSON.parse(parent.facebookToken)
             }
         },
+        name: { type: GraphQLString },
         expoPushToken: { type: GraphQLString },
-
+        region: { type: GraphQLString },
         phone: { type: GraphQLString },
         currentLatitude: { type: GraphQLFloat },
         currentLongitude: { type: GraphQLFloat },
@@ -428,6 +429,36 @@ const RootQueryType = new GraphQLObjectType({
                 return x
             }
         },
+        findLocalUsers: {
+            type: new GraphQLList(UserType),
+            args: {
+                region: { type: GraphQLString },
+                userId: { type: GraphQLID }
+            },
+            async resolve(parent, args) {
+                let localUsers = await user.find({ region: args.region })
+                let connections = await connection.find({ followerId: args.userId })
+                for (let connection of connections) {
+                    localUsers = localUsers.filter(user => user._id == connection.followeeId)
+                }
+                return localUsers
+            }
+        },
+        searchUser: {
+            type: new GraphQLList(UserType),
+            args: {
+                name: { type: GraphQLString },
+                phone: { type: GraphQLString },
+            },
+            resolve(parent, args) {
+                return user.find({
+                    $and: [
+                        { name: { $regex: new RegExp(args.name) } },
+                        { phone: { $regex: new RegExp(args.phone) } }
+                    ]
+                })
+            }
+        }
     }
 })
 

@@ -9,7 +9,9 @@ var userSchema = new mongoose.Schema({
     rating: { type: Number },
     currentCity: { type: String },
     locationInfo: { type: String },
-    expoPushToken: { type: String }
+    expoPushToken: { type: String },
+    region: { type: String },
+    name: { type: String },
 })
 
 const User = mongoose.model('User', userSchema)

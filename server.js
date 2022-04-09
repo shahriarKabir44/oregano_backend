@@ -67,7 +67,8 @@ function startExpress() {
             $set: {
                 locationInfo: req.body.locationInfo,
                 currentLongitude: req.body.currentLongitude,
-                currentLatitude: req.body.currentLatitude
+                currentLatitude: req.body.currentLatitude,
+                region: req.body.region
             }
         })
             .then(data => {
