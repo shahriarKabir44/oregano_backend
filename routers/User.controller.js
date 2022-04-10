@@ -94,6 +94,13 @@ UserController.post('/requestOTP', (req, res) => {
         })
 })
 
+UserController.post('/logout', (req, res) => {
+    User.findByIdAndUpdate(req.body.userId, { $set: { expoPushToken: null } }).then(data => {
+        res.send({ data: data })
+    })
+
+})
+
 UserController.post('/registerRider', (req, res) => {
     User.findByIdAndUpdate(req.body.userId, { $set: { isRider: 1 } })
         .then(data => {
