@@ -3,7 +3,8 @@ const Post = require('../schemas/post')
 const Tags = require('../schemas/tags')
 const multer = require('multer');
 const fs = require('fs')
-const path = require('path')
+const path = require('path');
+const AvailableItem = require('../schemas/availableItem');
 
 const upload = multer()
 
@@ -21,6 +22,27 @@ PostController.post('/upload', upload.array(), (req, res) => {
     //res.send({ data: "test" })
 })
 
+PostController.post('/updateTags', (req, res) => {
+    console.log(req.body);
+    let newData = new AvailableItem({ ...req.body })
+    newData.save()
+        .then(data => {
+            res.send({ data: 1 })
+        })
+})
+
+PostController.post('/getTagsOfToday', (req, res) => {
+    console.log(req.body.day);
+    AvailableItem.find({
+        $and: [
+            { userId: req.body.userId },
+            { day: { $gte: req.body.day } }
+        ]
+    }).then(items => {
+        console.log(items);
+        res.send({ data: items })
+    })
+})
 
 PostController.post('/updatePostImages', (req, res) => {
     Post.findByIdAndUpdate(req.body.postId, { images: req.body.images })
