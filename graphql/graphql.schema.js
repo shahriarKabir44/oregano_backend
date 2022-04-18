@@ -105,7 +105,7 @@ const PostType = new GraphQLObjectType({
         postedOn: { type: GraphQLFloat },
         district: { type: GraphQLString },
         unitType: { type: GraphQLString },
-
+        lowerCasedName: { type: GraphQLString },
         owner: {
             type: UserType,
             resolve(parent, args) {
