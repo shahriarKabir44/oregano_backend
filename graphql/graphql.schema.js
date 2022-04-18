@@ -235,7 +235,8 @@ const OrderItemType = new GraphQLObjectType({
     name: "orderItem",
     fields: () => ({
         orderId: { type: GraphQLID },
-        postId: { type: GraphQLID },
+        itemName: { type: GraphQLString },
+        lowerCasedName: { type: GraphQLString },
         amount: { type: GraphQLInt },
         status: { type: GraphQLInt },
         post: {
@@ -291,15 +292,7 @@ const RootQueryType = new GraphQLObjectType({
                 return Order.find({ buyerId: args.buyerId }).sort({ time: -1 })
             }
         },
-        getOrderListOfAPost: {
-            type: new GraphQLList(OrderItemType),
-            args: {
-                postId: { type: GraphQLID }
-            },
-            resolve(parent, args) {
-                return orderItem.find({ postId: args.postId })
-            }
-        },
+
         getPostRatings: {
             type: new GraphQLList(RatingType),
             args: {
@@ -473,7 +466,8 @@ module.exports = new GraphQLSchema({
                 type: OrderItemType,
                 args: {
                     orderId: { type: GraphQLID },
-                    postId: { type: GraphQLID },
+                    itemName: { type: GraphQLString },
+                    lowerCasedName: { type: GraphQLString },
                     amount: { type: GraphQLInt },
                 },
                 async resolve(parent, args) {

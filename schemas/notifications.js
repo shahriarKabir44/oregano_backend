@@ -23,7 +23,7 @@ module.exports = Notification
 7: rejected all
 8: someone has rated my post
 9: someone is following me 
-10: someeone I follow has posted 
+10: someone I follow has posted 
 note: a rider will be manually called over the phone number before assigning
 
 todo:

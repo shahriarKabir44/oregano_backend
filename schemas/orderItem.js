@@ -2,7 +2,8 @@ var mongoose = require('mongoose')
 
 let orderItemSchema = new mongoose.Schema({
     orderId: { type: mongoose.Schema.Types.ObjectId },
-    postId: { type: mongoose.Schema.Types.ObjectId },
+    itemName: { type: String },
+    lowerCasedName: { type: String },
     amount: { type: Number },
     status: { type: Number }
 })
