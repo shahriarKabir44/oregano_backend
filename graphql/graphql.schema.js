@@ -12,11 +12,17 @@ const {
 
 } = graphql;
 
+let orderItem = require('../schemas/orderItem')
+let connection = require('../schemas/connection');
+const Tag = require('../schemas/tags');
+const Rating = require('../schemas/rating');
+
 let user = require('../schemas/user')
 let post = require('../schemas/post')
 let tags = require('../schemas/tags')
 let Order = require('../schemas/order')
-let notification = require('../schemas/notifications')
+let notification = require('../schemas/notifications');
+const AvailableItem = require('../schemas/availableItem');
 
 const personalInfoType = new GraphQLObjectType({
     name: "PersonalInfo",
@@ -81,10 +87,16 @@ const UserType = new GraphQLObjectType({
     })
 })
 
-let orderItem = require('../schemas/orderItem')
-let connection = require('../schemas/connection');
-const Tag = require('../schemas/tags');
-const Rating = require('../schemas/rating');
+const AvailableItemType = new GraphQLObjectType({
+    name: "AvailableItem",
+    fields: () => ({
+        userId: { type: GraphQLID },
+        tag: { type: GraphQLString },
+        day: { type: GraphQLFloat },
+        unitPrice: { type: GraphQLFloat }
+
+    })
+})
 
 const PostType = new GraphQLObjectType({
     name: "Post",
@@ -258,6 +270,20 @@ const OrderItemType = new GraphQLObjectType({
 const RootQueryType = new GraphQLObjectType({
     name: "rootQuery",
     fields: {
+        searchByName: {
+            type: new GraphQLList(AvailableItemType),
+            args: {
+                tagName: { type: GraphQLString }
+            },
+            resolve(parent, args) {
+                AvailableItem.find({
+                    $and: [
+                        { tag: args.tagName },
+                        { day: { $gte: Math.floor(((new Date()) * 1) / (24 * 3600 * 1000)) } }
+                    ]
+                })
+            }
+        },
         getAllOrders: {
             type: new GraphQLList(OrderType),
             args: {},

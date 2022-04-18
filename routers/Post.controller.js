@@ -23,12 +23,20 @@ PostController.post('/upload', upload.array(), (req, res) => {
 })
 
 PostController.post('/updateTags', (req, res) => {
-    console.log(req.body);
-    let newData = new AvailableItem({ ...req.body })
-    newData.save()
-        .then(data => {
-            res.send({ data: 1 })
-        })
+
+    AvailableItem.findOneAndDelete({
+        $and: [
+            { userId: req.body.userId },
+            { day: req.body.day }
+        ]
+    }).then((rws) => {
+        let newData = new AvailableItem({ ...req.body })
+        newData.save()
+            .then(data => {
+                res.send({ data: 1 })
+            })
+    })
+
 })
 
 PostController.post('/getTagsOfToday', (req, res) => {
