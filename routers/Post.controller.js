@@ -30,7 +30,11 @@ PostController.post('/updateTags', (req, res) => {
             { day: req.body.day }
         ]
     }).then((rws) => {
-        let newData = new AvailableItem({ ...req.body })
+        let newData = new AvailableItem({
+            ...req.body,
+            rating: (rws.rating ? rws.rating : 0),
+            ratedBy: (rws.ratedBy ? rws.ratedBy : 0)
+        })
         newData.save()
             .then(data => {
                 res.send({ data: 1 })

@@ -93,8 +93,42 @@ const AvailableItemType = new GraphQLObjectType({
         userId: { type: GraphQLID },
         tag: { type: GraphQLString },
         day: { type: GraphQLFloat },
-        unitPrice: { type: GraphQLFloat }
+        rating: { type: GraphQLInt },
+        unitPrice: { type: GraphQLFloat },
+        ratedBy: { type: GraphQLFloat },
+        lowerCasedName: {
+            type: GraphQLString,
+            resolve(parent, args) {
+                return parent.tag
+            }
+        },
+        itemName: {
+            type: GraphQLString,
+            resolve(parent, args) {
+                return parent.tag
+            }
+        },
+        vendor: {
+            type: UserType,
+            resolve(parent, args) {
+                return user.findById(parent.userId)
+            }
+        },
+        relatedPost: {
+            type: new GraphQLList(PostType),
+            resolve(parent, args) {
+                return post.find({ lowerCasedName: parent.tag })
+            }
+        },
+        getLastPost: {
+            type: PostType,
+            async resolve(parent, args) {
+                console.log(parent.tag)
+                let data = await post.find({ lowerCasedName: parent.tag }).sort({ postedOn: -1 }).limit(1)
 
+                return data[0]
+            }
+        }
     })
 })
 
@@ -276,9 +310,26 @@ const RootQueryType = new GraphQLObjectType({
                 tagName: { type: GraphQLString }
             },
             resolve(parent, args) {
-                AvailableItem.find({
+
+                return AvailableItem.find({
                     $and: [
-                        { tag: args.tagName },
+                        { tag: { $regex: new RegExp(args.tagName.toLowerCase()) } },
+                        { day: { $gte: Math.floor(((new Date()) * 1) / (24 * 3600 * 1000)) } }
+                    ]
+                })
+            }
+        },
+        getItemDetails: {
+            type: AvailableItemType,
+            args: {
+                userId: { type: GraphQLID },
+                tag: { type: GraphQLString },
+            },
+            resolve(parent, args) {
+                return AvailableItem.findOne({
+                    $and: [
+                        { userId: args.userId },
+                        { tag: args.tag },
                         { day: { $gte: Math.floor(((new Date()) * 1) / (24 * 3600 * 1000)) } }
                     ]
                 })
