@@ -38,7 +38,6 @@ OrderController.post('/markPickedUp', async (req, res) => {
             })
         })()
     ]).catch(e => {
-        console.log(e);
     })
 
 

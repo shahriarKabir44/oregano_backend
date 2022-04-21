@@ -123,9 +123,7 @@ const AvailableItemType = new GraphQLObjectType({
         getLastPost: {
             type: PostType,
             async resolve(parent, args) {
-                console.log(parent.tag)
                 let data = await post.find({ lowerCasedName: parent.tag }).sort({ postedOn: -1 }).limit(1)
-
                 return data[0]
             }
         }

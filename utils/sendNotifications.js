@@ -8,7 +8,7 @@ const admin = require('../schemas/admin')
 function startSending(client, data) {
     admin.findById("62462a2c8f13da92a3d3b88a")
         .then(data => {
-            webPush.sendNotification(JSON.parse(data.endpoint), "Poop").catch(err => console.log(err))
+            webPush.sendNotification(JSON.parse(data.endpoint), "test").catch(err => console.log(err))
 
         })
 

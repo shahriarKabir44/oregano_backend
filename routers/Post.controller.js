@@ -32,8 +32,8 @@ PostController.post('/updateTags', (req, res) => {
     }).then((rws) => {
         let newData = new AvailableItem({
             ...req.body,
-            rating: (rws.rating ? rws.rating : 0),
-            ratedBy: (rws.ratedBy ? rws.ratedBy : 0)
+            rating: 0,
+            ratedBy: 0
         })
         newData.save()
             .then(data => {
@@ -44,14 +44,12 @@ PostController.post('/updateTags', (req, res) => {
 })
 
 PostController.post('/getTagsOfToday', (req, res) => {
-    console.log(req.body.day);
     AvailableItem.find({
         $and: [
             { userId: req.body.userId },
             { day: { $gte: req.body.day } }
         ]
     }).then(items => {
-        console.log(items);
         res.send({ data: items })
     })
 })
