@@ -102,6 +102,8 @@ const AvailableItemType = new GraphQLObjectType({
                 return parent.tag
             }
         },
+        region: { type: GraphQLString },
+
         itemName: {
             type: GraphQLString,
             resolve(parent, args) {

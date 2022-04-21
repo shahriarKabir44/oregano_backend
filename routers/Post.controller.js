@@ -23,7 +23,6 @@ PostController.post('/upload', upload.array(), (req, res) => {
 })
 
 PostController.post('/updateTags', (req, res) => {
-
     AvailableItem.findOneAndDelete({
         $and: [
             { userId: req.body.userId },

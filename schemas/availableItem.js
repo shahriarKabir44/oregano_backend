@@ -6,7 +6,8 @@ const availableItemSchema = new mongoose.Schema({
     day: { type: Number },
     unitPrice: { type: Number },
     rating: { type: Number },
-    ratedBy: { type: Number }
+    ratedBy: { type: Number },
+    region: { type: String }
 })
 
 let AvailableItem = mongoose.model('availableItem', availableItemSchema)
