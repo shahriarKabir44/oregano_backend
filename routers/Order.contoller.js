@@ -99,9 +99,9 @@ OrderController.post('/assignRider', async (req, res) => {
     res.send({ data: 1 });
 })
 OrderController.get('/acceptOrder/:orderId', (req, res) => {
-    order.findByIdAndUpdate(req.params.orderId, { status: 1 })
+    order.findByIdAndUpdate(req.params.orderId, { status: -1 })
         .then(data => {
-            sendNotifications()
+
             return data
 
         })

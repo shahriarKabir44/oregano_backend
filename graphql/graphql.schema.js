@@ -285,10 +285,18 @@ const OrderItemType = new GraphQLObjectType({
         lowerCasedName: { type: GraphQLString },
         amount: { type: GraphQLInt },
         status: { type: GraphQLInt },
-        post: {
+        lastPost: {
             type: PostType,
             async resolve(parent, args) {
-                return await post.findById(parent.postId)
+                let orderInfo = await Order.findById(parent.orderId)
+                let lastPost = await post.find({
+                    $and: [
+                        { postedBy: orderInfo.sellerId },
+                        { lowerCasedName: parent.lowerCasedName }
+                    ]
+                }).sort({ postedOn: -1 }).limit(1)
+                if (lastPost.length) return lastPost[0]
+                else return null
             }
         },
         orderDetails: {
@@ -348,6 +356,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             resolve(parent, args) {
+                console.log(args);
                 return Order.findById(args.id)
             }
         },
