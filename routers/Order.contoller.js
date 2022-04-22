@@ -109,6 +109,15 @@ OrderController.get('/acceptOrder/:orderId', (req, res) => {
             res.send({ data: "done" })
         })
 })
+
+OrderController.get('/requestRider/:orderId', (req, res) => {
+    order.findByIdAndUpdate(req.params.orderId, { status: -2 })
+        .then(data => {
+            sendNotifications()
+            res.send({ data: data })
+        })
+})
+
 OrderController.post('/createNewOrder', async (req, res) => {
     let { notificationMessage, time, sellerId } = req.body;
 
