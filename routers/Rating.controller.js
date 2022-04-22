@@ -6,6 +6,8 @@ const RatingController = require('express').Router()
 const User = require('../schemas/user')
 const pushNotificationManager = require('../utils/pushNotificationManager')
 
+
+
 async function updateratingByTags(tagname, ownerId, rating) {
     let existingData = await UserTagRating.findOne({
         $and: [
@@ -31,7 +33,7 @@ async function updateratingByTags(tagname, ownerId, rating) {
 RatingController.post('/getUserRating', (req, res) => {
     Rating.findOne({
         $and: [
-            { postId: req.body.postId },
+            { lowerCasedName: req.body.lowerCasedName },
             { ratedBy: req.body.ratedBy }
         ]
     })
@@ -47,56 +49,55 @@ RatingController.post('/updateOrder', (req, res) => {
         })
 })
 
-async function updateRating(existingData, newRating, tagList, ownerId) {
-    let promises = [Rating.findByIdAndUpdate(existingData._id, { rating: newRating })]
+async function updateRating(existingData, newRating, ownerId) {
+    let promises = [Rating.findByIdAndUpdate(existingData._id, { rating: newRating }),
 
-    for (let tag of tagList) {
-        promises.push((async () => {
-            let existingRatingInfo = await UserTagRating.findOne({
-                $and: [
-                    { tagName: tag },
-                    { ownerId: ownerId }
-                ]
-            })
-            let exisitingRating = existingRatingInfo.avg_rating
-            let newAvgRating = (exisitingRating - existingData.rating)
-            if (!newAvgRating) newAvgRating = newRating
-            else newRating /= 2
-            return UserTagRating.findByIdAndUpdate(existingRatingInfo._id, { avg_rating: newAvgRating })
-        })())
-    }
+    (async () => {
+        let existingRatingInfo = await UserTagRating.findOne({
+            $and: [
+                { tagName: existingData.lowerCasedName },
+                { ownerId: ownerId }
+            ]
+        })
+        let exisitingRating = existingRatingInfo.avg_rating
+        let newAvgRating = (exisitingRating - existingData.rating)
+        if (!newAvgRating) newAvgRating = newRating
+        else newRating /= 2
+        return UserTagRating.findByIdAndUpdate(existingRatingInfo._id, { avg_rating: newAvgRating })
+
+    })()
+    ]
+
     await Promise.all(promises)
 }
 
-async function createRating(postId, ownerId, ratedBy, tagLIst, rating) {
+async function createRating(lowerCasedName, ownerId, ratedBy, rating) {
     let newRating = new Rating({
-        postId: postId,
+        lowerCasedName: lowerCasedName,
         ratedBy: ratedBy,
         rating: rating,
     })
-    let promises = [newRating.save()]
-    for (let tag of tagLIst) {
-        promises.push(updateratingByTags(tag, ownerId, rating))
-    }
+    let promises = [newRating.save(), updateratingByTags(lowerCasedName, ownerId, rating)]
+
     await Promise.all(promises)
 }
 
 RatingController.post('/rateItem', async (req, res) => {
-    let { postId, ownerId, ratedBy, tagLIst, rating, itemName, userName } = req.body
-    tagLIst = JSON.parse(tagLIst)
+    console.log(req.body);
+    let { lowerCasedName, ownerId, ratedBy, rating, itemName, userName } = req.body
     let existingData = await Rating.findOne({
         $and: [
-            { postId: postId },
+            { lowerCasedName: lowerCasedName },
             { ratedBy: ratedBy },
         ]
     })
 
     let promises = [(async () => {
         if (existingData) {
-            await updateRating(existingData, rating, tagLIst, ownerId)
+            await updateRating(existingData, rating, ownerId)
         }
         else {
-            await createRating(postId, ownerId, ratedBy, tagLIst, rating)
+            await createRating(lowerCasedName, ownerId, ratedBy, rating)
         }
     })()]
 
@@ -105,7 +106,7 @@ RatingController.post('/rateItem', async (req, res) => {
         type: 8,
         isSeen: 0,
         recipient: ownerId,
-        relatedSchemaId: postId,
+        relatedSchemaId: null,
         time: (new Date()) * 1,
         message: `${userName} has rated your ${itemName} ${rating}⭐`,
     })

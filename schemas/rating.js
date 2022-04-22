@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 var ratingSchema = new mongoose.Schema({
-    postId: { type: mongoose.Schema.Types.ObjectId },
+    lowerCasedName: { type: String },
     ratedBy: { type: mongoose.Schema.Types.ObjectId },
     rating: { type: Number },
 
