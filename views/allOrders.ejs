@@ -21,9 +21,13 @@
       <div class="navbar-header">
         <a class="navbar-brand" href="/management">Oregano</a>
       </div>
-      <ul class="nav navbar-nav">
+      <ul style="display: flex;justify-content:space-between;align-items:center" class="nav navbar-nav">
         <li  class="active"><a href="#">Management</a></li>
+		<li ng-if="admin.isLoggedIn">
+			<button class="btn btn-danger" ng-click="logout()" >Log out</button>
+		  </li>
       </ul>
+	   
     </div>
   </nav>
 
@@ -241,7 +245,7 @@
   <div ng-if="admin.isLoggedIn" class=" ">
     <div >
       <div>
-        <h2>All orders of {{admin.region}}</h2>
+        <h2>All orders from {{admin.region}}</h2>
       </div>
       <table class="table table-bordered">
         <thead>

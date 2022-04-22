@@ -98,7 +98,10 @@ app.controller('myController', function ($scope, $http) {
 
         }
     }
-
+    $scope.logout = () => {
+        localStorage.clear()
+        $scope.isLoggedIn()
+    }
     $scope.onInit = function () {
         $scope.isLoggedIn()
     }
