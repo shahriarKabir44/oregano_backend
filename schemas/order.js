@@ -28,7 +28,8 @@ status:
 status:
 
 0= order pending
-1= order approved (if riderId==null: awaiting assignment) else awaiting pickup
+-1= order approved  
+-2= searching for rider
 2= order rejected
 3=: rider assigned
 4= order picked up (awaiting delivery)
