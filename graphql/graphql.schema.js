@@ -385,10 +385,16 @@ const RootQueryType = new GraphQLObjectType({
         getPostRatings: {
             type: new GraphQLList(RatingType),
             args: {
-                postId: { type: GraphQLID }
+                ownerId: { type: GraphQLID },
+                lowerCasedName: { type: GraphQLString }
             },
             resolve(parent, args) {
-                return Rating.find({ postId: args.postId })
+                return Rating.find({
+                    $and: [
+                        { ownerId: args.ownerId },
+                        { lowerCasedName: args.lowerCasedName }
+                    ]
+                })
             }
         },
         findUser: {

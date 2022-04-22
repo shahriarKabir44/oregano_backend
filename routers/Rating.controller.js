@@ -76,6 +76,7 @@ async function createRating(lowerCasedName, ownerId, ratedBy, rating) {
         lowerCasedName: lowerCasedName,
         ratedBy: ratedBy,
         rating: rating,
+        ownerId: ownerId
     })
     let promises = [newRating.save(), updateratingByTags(lowerCasedName, ownerId, rating)]
 
