@@ -27,7 +27,7 @@ app.controller('myController', function ($scope, $http) {
     $scope.currentOrderId = -1
     $scope.takeAction = (orderStatus, orderId) => {
         $scope.getOrderInfo(orderId)
-        if (orderStatus == 1) {
+        if (orderStatus == -2) {
             $scope.getRiders()
             $('#riderAssignmentModal').modal('show');
         }
@@ -69,10 +69,15 @@ app.controller('myController', function ($scope, $http) {
               }`
         }))
             .then(({ data }) => {
-                for (let order of data.data.getAllOrders) {
+
+                let orderDatas = data.data.getAllOrders.filter(order => (order.status != 0 && order.status != -1))
+                console.log(orderDatas)
+                for (let order of orderDatas) {
                     order._id = order.id
                     order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
-                    if (order.status == 1) {
+
+
+                    if (order.status == -2) {
                         order.statusText = "Pending rider"
                         order.actionText = "Assign rider"
                     }
@@ -96,8 +101,8 @@ app.controller('myController', function ($scope, $http) {
                         order.actionText = "View details"
                     }
                 }
-                $scope.orders = (data.data.getAllOrders)
-                $scope.temOrderList = data.data.getAllOrders
+                $scope.orders = orderDatas
+                $scope.temOrderList = orderDatas
             }, (failure) => {
 
             })
@@ -129,14 +134,7 @@ app.controller('myController', function ($scope, $http) {
                     deliveryTime
                     orderedItems{
                         amount
-                        post{
-                            id
-                            itemName
-                            images
-                            postedOn
-                            unitType
-                            unitPrice
-                        }
+                        
                     }
                     seller{
                         facebookToken

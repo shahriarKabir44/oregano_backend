@@ -47,28 +47,30 @@ OrderController.post('/markPickedUp', async (req, res) => {
 
 OrderController.post('/markDelivered', async (req, res) => {
     sendNotifications()
+    console.log(req.body);
 
 
-    order.findByIdAndUpdate(req.body.orderId, { status: 5 });
-    (async () => {
-        let newNotification = new notification({
-            type: 6,
-            isSeen: 0,
-            recipient: req.body.buyerId,
-            relatedSchemaId: req.body.orderId,
-            time: (new Date()) * 1,
-            message: "Your order has arrived. Please pick up.",
-        })
-        await newNotification.save()
-    })();
-    (async () => {
-        let receiver = await User.findById(req.body.buyerId)
-        let receiverToken = receiver.expoPushToken
-        await pushNotificationManager({
-            to: receiverToken,
-            message: "Your order has arrived. Please pick up."
-        })
-    })()
+    await Promise.all([
+        order.findByIdAndUpdate(req.body.orderId, { $set: { status: 5 } }),
+        (async () => {
+            let newNotification = new notification({
+                type: 6,
+                isSeen: 0,
+                recipient: req.body.buyerId,
+                relatedSchemaId: req.body.orderId,
+                time: (new Date()) * 1,
+                message: "Your order has arrived. Please pick up.",
+            })
+            await newNotification.save()
+        })(),
+        (async () => {
+            let receiver = await User.findById(req.body.buyerId)
+            let receiverToken = receiver.expoPushToken
+            await pushNotificationManager({
+                to: receiverToken,
+                message: "Your order has arrived. Please pick up."
+            })
+        })()])
     res.send({ data: 1 })
 
 })
