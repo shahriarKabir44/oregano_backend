@@ -222,6 +222,7 @@ const OrderType = new GraphQLObjectType({
         itemsCount: { type: GraphQLInt },
         isPaid: { type: GraphQLInt },
         deliveryTime: { type: GraphQLFloat },
+        city: { type: GraphQLString },
         buyer: {
             type: UserType,
             async resolve(parent, args) {
@@ -345,9 +346,11 @@ const RootQueryType = new GraphQLObjectType({
         },
         getAllOrders: {
             type: new GraphQLList(OrderType),
-            args: {},
+            args: {
+                region: { type: GraphQLString }
+            },
             resolve(parent, args) {
-                return Order.find({})
+                return Order.find({ city: args.city })
             }
         },
         getOrderInfo: {

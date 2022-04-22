@@ -1,6 +1,42 @@
 var app = angular.module('myApp', []);
 
 app.controller('myController', function ($scope, $http) {
+    $scope.admin = {
+        region: "",
+        isLoggedIn: false
+    }
+    $scope.loginInfo = {
+        region: "",
+        phone: "",
+        password: "",
+    }
+    $scope.login = () => {
+        $http.post('/admin/login', JSON.stringify({ ...$scope.loginInfo }))
+            .then(({ data }) => {
+                console.log(data.data);
+                alert(`Hello ${data.data.user.name}!`)
+                localStorage.setItem('token', data.data.token)
+                $scope.isLoggedIn()
+            })
+    }
+    $scope.availableRegions = ['Khulna',
+        'Jhenaidah',
+        'Jashore',
+        'Chuadanga',
+        'Bagerhat',
+        'Satkhira',
+        'Narail',
+        'Meherpur',
+        'Magura',
+        'Kushtia',
+        'Chapainawabganj',
+        'Natore',
+        'Joypurhat',
+        'Naogaon',
+        'Bogura',
+        'Sirajganj',
+        'Rajshahi',
+        'Pabna']
 
     $scope.filter = {
         buyerPhone: "",
@@ -36,15 +72,41 @@ app.controller('myController', function ($scope, $http) {
         }
 
     }
+    $scope.isLoggedIn = () => {
+        let status = localStorage.getItem('token')
 
-    $scope.onInit = function () {
-        $scope.fetchAllOrders()
+        if (!status) {
+            $scope.admin.isLoggedIn = false
+        }
+        else {
+            fetch('/admin/isAuthorized', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': `Bearer ${status}`
+                }
+            }).then(res => res.json())
+                .then(({ data }) => {
+                    console.log(data)
+                    $scope.$apply(() => {
+
+                        $scope.admin = data.user
+                        $scope.admin.isLoggedIn = true
+                        $scope.fetchAllOrders(status)
+                    })
+                })
+
+        }
     }
 
-    $scope.fetchAllOrders = () => {
+    $scope.onInit = function () {
+        $scope.isLoggedIn()
+    }
+
+    $scope.fetchAllOrders = (region) => {
         $http.post('/graphql', JSON.stringify({
             query: `query{
-                getAllOrders{
+                getAllOrders(region:"${region}"){
                   id
                   
                   buyer{

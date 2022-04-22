@@ -17,6 +17,7 @@ var orderSchema = new mongoose.Schema({
     isPaid: { type: Number },
     isRated: { type: Number },
     deliveryTime: { type: Number },
+    city: { type: String }
 })
 
 const Order = mongoose.model('Order', orderSchema)

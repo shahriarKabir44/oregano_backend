@@ -111,7 +111,7 @@ function startExpress() {
     app.use('/posts', require('./routers/Post.controller'))
 
     app.use('/orders', require('./routers/Order.contoller'))
-
+    app.use('/admin', require('./routers/Admin.controller'))
     app.use('/graphql', graphqlHTTP.graphqlHTTP(req => (
         {
             schema: require('./graphql/graphql.schema'),
