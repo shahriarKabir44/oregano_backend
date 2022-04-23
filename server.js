@@ -53,9 +53,15 @@ function startExpress() {
     })
 
     app.use('/connection', require('./routers/Connection.controller'))
+    app.get('/getAllTags', (req, res) => {
+        Post.find({}).distinct('lowerCasedName').then(data => {
+
+            res.send({ data: data })
+        })
+    })
     app.get('/getAvailableTags/:userId', (req, res) => {
         Post.find({ postedBy: req.params.userId }).distinct('lowerCasedName').then(data => {
-            console.log(data)
+
             res.send({ data: data })
         })
     })
