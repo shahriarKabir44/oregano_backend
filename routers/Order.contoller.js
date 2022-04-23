@@ -122,7 +122,7 @@ OrderController.get('/requestRider/:orderId', (req, res) => {
 
 OrderController.post('/createNewOrder', async (req, res) => {
     let { notificationMessage, time, sellerId } = req.body;
-
+    console.log(req.body);
     let newOrder = new order({ ...req.body, isRated: 0 })
     await newOrder.save()
     let newNotification = new notification({

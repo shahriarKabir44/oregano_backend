@@ -92,7 +92,7 @@ app.controller('myController', function ($scope, $http) {
 
                         $scope.admin = data.user
                         $scope.admin.isLoggedIn = true
-                        $scope.fetchAllOrders(status)
+                        $scope.fetchAllOrders(data.user.region)
                     })
                 })
 
@@ -134,9 +134,9 @@ app.controller('myController', function ($scope, $http) {
               }`
         }))
             .then(({ data }) => {
-
+                console.log(data);
                 let orderDatas = data.data.getAllOrders.filter(order => (order.status != 0 && order.status != -1))
-                console.log(orderDatas)
+
                 for (let order of orderDatas) {
                     order._id = order.id
                     order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()

@@ -22,6 +22,13 @@ PostController.post('/upload', upload.array(), (req, res) => {
     //res.send({ data: "test" })
 })
 
+PostController.post('/removeTodayTags', (req, res) => {
+    AvailableItem.deleteMany({ userId: req.body.userId })
+        .then(data => {
+            res.send({ data: data })
+        })
+})
+
 PostController.post('/updateTags', (req, res) => {
     AvailableItem.findOneAndDelete({
         $and: [
@@ -49,6 +56,7 @@ PostController.post('/getTagsOfToday', (req, res) => {
             { day: { $gte: req.body.day } }
         ]
     }).then(items => {
+        console.log(items)
         res.send({ data: items })
     })
 })

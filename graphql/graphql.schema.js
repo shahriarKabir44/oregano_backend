@@ -350,7 +350,8 @@ const RootQueryType = new GraphQLObjectType({
                 region: { type: GraphQLString }
             },
             resolve(parent, args) {
-                return Order.find({ city: args.city })
+                console.log(args);
+                return Order.find({ city: args.region })
             }
         },
         getOrderInfo: {
@@ -359,7 +360,7 @@ const RootQueryType = new GraphQLObjectType({
                 id: { type: GraphQLID }
             },
             resolve(parent, args) {
-                console.log(args);
+
                 return Order.findById(args.id)
             }
         },
