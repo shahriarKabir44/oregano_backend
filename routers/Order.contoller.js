@@ -47,9 +47,6 @@ OrderController.post('/markPickedUp', async (req, res) => {
 
 OrderController.post('/markDelivered', async (req, res) => {
     sendNotifications()
-    console.log(req.body);
-
-
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { $set: { status: 5 } }),
         (async () => {
@@ -122,7 +119,6 @@ OrderController.get('/requestRider/:orderId', (req, res) => {
 
 OrderController.post('/createNewOrder', async (req, res) => {
     let { notificationMessage, time, sellerId } = req.body;
-    console.log(req.body);
     let newOrder = new order({ ...req.body, isRated: 0 })
     await newOrder.save()
     let newNotification = new notification({

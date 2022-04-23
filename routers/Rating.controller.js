@@ -84,7 +84,6 @@ async function createRating(lowerCasedName, ownerId, ratedBy, rating) {
 }
 
 RatingController.post('/rateItem', async (req, res) => {
-    console.log(req.body);
     let { lowerCasedName, ownerId, ratedBy, rating, itemName, userName } = req.body
     let existingData = await Rating.findOne({
         $and: [

@@ -13,7 +13,6 @@ app.controller('myController', function ($scope, $http) {
     $scope.login = () => {
         $http.post('/admin/login', JSON.stringify({ ...$scope.loginInfo }))
             .then(({ data }) => {
-                console.log(data.data);
                 alert(`Hello ${data.data.user.name}!`)
                 localStorage.setItem('token', data.data.token)
                 $scope.isLoggedIn()
@@ -87,7 +86,6 @@ app.controller('myController', function ($scope, $http) {
                 }
             }).then(res => res.json())
                 .then(({ data }) => {
-                    console.log(data)
                     $scope.$apply(() => {
 
                         $scope.admin = data.user
@@ -134,7 +132,6 @@ app.controller('myController', function ($scope, $http) {
               }`
         }))
             .then(({ data }) => {
-                console.log(data);
                 let orderDatas = data.data.getAllOrders.filter(order => (order.status != 0 && order.status != -1))
 
                 for (let order of orderDatas) {

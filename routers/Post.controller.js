@@ -56,7 +56,6 @@ PostController.post('/getTagsOfToday', (req, res) => {
             { day: { $gte: req.body.day } }
         ]
     }).then(items => {
-        console.log(items)
         res.send({ data: items })
     })
 })

@@ -350,8 +350,7 @@ const RootQueryType = new GraphQLObjectType({
                 region: { type: GraphQLString }
             },
             resolve(parent, args) {
-                console.log(args);
-                return Order.find({ city: args.region })
+                return Order.find({ city: args.region }).sort({ time: -1 })
             }
         },
         getOrderInfo: {
@@ -419,10 +418,11 @@ const RootQueryType = new GraphQLObjectType({
         findLocalPosts: {
             type: new GraphQLList(PostType),
             args: {
-                district: { type: GraphQLString }
+                city: { type: GraphQLString }
             },
             async resolve(parent, args) {
-                return await post.find({ district: args.district })
+                console.log(args);
+                return await post.find({ city: args.city })
             }
         },
 
@@ -462,7 +462,7 @@ const RootQueryType = new GraphQLObjectType({
                 return await Order.find({
                     $and: [
                         { riderId: args.id },
-                        { status: 1 }
+                        { status: 3 }
                     ]
                 }).sort({ time: -1 })
             }

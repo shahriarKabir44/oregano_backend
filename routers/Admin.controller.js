@@ -34,7 +34,6 @@ router.get('/isAuthorized', verifyAuthToken, (req, res) => {
 
 router.post('/login', async (req, res) => {
     var { phone, password, region } = req.body
-    console.log(req.body)
     var admin = await Admin.findOne({
         $and: [
             { phone: phone },
