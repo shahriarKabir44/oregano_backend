@@ -60,7 +60,7 @@ async function updateRating(existingData, newRating, ownerId) {
             ]
         })
         let exisitingRating = existingRatingInfo.avg_rating
-        let newAvgRating = (exisitingRating - existingData.rating)
+        let newAvgRating = (exisitingRating * 2 - existingData.rating)
         if (!newAvgRating) newAvgRating = newRating
         else newRating /= 2
         return UserTagRating.findByIdAndUpdate(existingRatingInfo._id, { avg_rating: newAvgRating })

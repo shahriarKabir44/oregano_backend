@@ -23,6 +23,9 @@
       </div>
       <ul style="display: flex;justify-content:space-between;align-items:center" class="nav navbar-nav">
         <li  class="active"><a href="#">Management</a></li>
+        <li style="margin:10px !important" ng-if="admin.isLoggedIn">
+          {{admin.name}}
+          </li>
 		<li ng-if="admin.isLoggedIn">
 			<button class="btn btn-danger" ng-click="logout()" >Log out</button>
 		  </li>
