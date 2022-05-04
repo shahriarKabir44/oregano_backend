@@ -1,4 +1,3 @@
-const Facebook = require('../schemas/facebook')
 const OTP = require('../schemas/otp')
 const User = require('../schemas/user')
 const UserController = require('express').Router()
@@ -19,7 +18,7 @@ UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
     fs.writeFile(`${dir}/${newFileName}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
         if (err) console.log(err);
         else {
-            const newURL = `http://192.168.43.90:3000/userImages/${userid}/${newFileName}`
+            const newURL = `/userImages/${userid}/${newFileName}`
             User.findById(userid)
                 .then(userData => {
                     let fbToken = JSON.parse(userData.facebookToken)
@@ -39,15 +38,13 @@ UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
 
 
 UserController.post('/isRegistered', (req, res) => {
-    Facebook.findOne({ facebookId: req.body.facebookId })
-        .then(data => {
-            if (data) {
-                User.findById(data.userId)
-                    .then(user => {
-                        //  user.facebookToken = JSON.parse(user.facebookToken)
-                        user.id = user._id
-                        res.send({ data: user })
-                    })
+    User.findOne({ facebookId: req.body.facebookId })
+        .then(user => {
+            if (user) {
+                //  user.facebookToken = JSON.parse(user.facebookToken)
+                user.id = user._id
+                res.send({ data: user })
+
             }
             else {
                 res.send({ data: 0 })
@@ -135,7 +132,7 @@ UserController.post('/confirmOTP', (req, res) => {
                     coverPhotoURL: "abcd"
                 }),
                 isRider: 0,
-
+                facebookId: req.body.facebookId,
             })
 
             OTP.findOneAndDelete({
@@ -147,11 +144,7 @@ UserController.post('/confirmOTP', (req, res) => {
                 newUser.save()
                     .then(() => {
                         let newData = { ...newUser._doc }
-                        let newFacebookConnection = new Facebook({
-                            facebookId: req.body.facebookId,
-                            userId: newData._id
-                        })
-                        newFacebookConnection.save()
+
                         newData.id = newData._id;
                         res.send({ data: newData })
                     })
