@@ -601,5 +601,6 @@ module.exports = new GraphQLSchema({
                 }
             }
         }
-    })
+    }),
+
 });

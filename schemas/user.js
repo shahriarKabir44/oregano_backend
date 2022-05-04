@@ -12,6 +12,7 @@ var userSchema = new mongoose.Schema({
     expoPushToken: { type: String },
     region: { type: String },
     name: { type: String },
+    facebookId: { type: Number },
 })
 
 const User = mongoose.model('User', userSchema)
