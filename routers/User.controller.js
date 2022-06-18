@@ -18,7 +18,7 @@ UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
     fs.writeFile(`${dir}/${newFileName}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
         if (err) console.log(err);
         else {
-            const newURL = `/userImages/${userid}/${newFileName}`
+            const newURL = `http://192.168.43.90:3000/userImages/${userid}/${newFileName}`
             User.findById(userid)
                 .then(userData => {
                     let fbToken = JSON.parse(userData.facebookToken)

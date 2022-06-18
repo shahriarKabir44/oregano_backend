@@ -16,7 +16,7 @@ PostController.post('/upload', upload.array(), (req, res) => {
     }
     fs.writeFile(`${dir}/${filename}.${type}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
         if (err) console.log(err);
-        res.send({ data: `/upload/${postedby}/${postedon}/${filename}.${type}` });
+        res.send({ data: `http://192.168.43.90:3000/upload/${postedby}/${postedon}/${filename}.${type}` });
 
     });
     //res.send({ data: "test" })
