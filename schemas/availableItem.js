@@ -6,7 +6,7 @@ const availableItemSchema = new mongoose.Schema({
     day: { type: Number },
     unitPrice: { type: Number },
     rating: { type: Number },
-    ratedBy: { type: Number },
+    ratedBy: { type: Number }, //number of people rated
     region: { type: String }
 })
 

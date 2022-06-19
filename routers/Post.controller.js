@@ -66,9 +66,33 @@ PostController.post('/updatePostImages', (req, res) => {
             res.send({ data: 1 })
         })
 })
-
+PostController.get("/isItemAvailable/:itemName/:ownerId", (req, res) => {
+    let currentDay = Math.floor(((new Date()) * 1) / (24 * 3600 * 1000))
+    let { itemName, ownerId } = req.params
+    AvailableItem.findOne({
+        $and: [
+            { userId: ownerId },
+            { tag: itemName },
+            { day: currentDay }
+        ]
+    })
+        .then((row, err) => {
+            if (!row) {
+                res.send({ data: { isAvailable: 0 } })
+            }
+            else {
+                res.send({
+                    data: {
+                        isAvailable: 1,
+                        unitPrice: row.unitPrice
+                    }
+                })
+            }
+        })
+})
 PostController.post('/createPost', async (req, res) => {
     let newPost = new Post(req.body)
+    console.log(req.body)
     await newPost.save()
     let newPostId = newPost._id
     let tagList = JSON.parse(req.body.tags)
