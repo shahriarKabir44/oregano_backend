@@ -69,6 +69,7 @@ PostController.post('/updatePostImages', (req, res) => {
 PostController.get("/isItemAvailable/:itemName/:ownerId", (req, res) => {
     let currentDay = Math.floor(((new Date()) * 1) / (24 * 3600 * 1000))
     let { itemName, ownerId } = req.params
+    console.log(req.params)
     AvailableItem.findOne({
         $and: [
             { userId: ownerId },
@@ -77,6 +78,7 @@ PostController.get("/isItemAvailable/:itemName/:ownerId", (req, res) => {
         ]
     })
         .then((row, err) => {
+            console.log(row)
             if (!row) {
                 res.send({ data: { isAvailable: 0 } })
             }
