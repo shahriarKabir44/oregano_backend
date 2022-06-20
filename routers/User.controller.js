@@ -2,37 +2,14 @@ const OTP = require('../schemas/otp')
 const User = require('../schemas/user')
 const UserController = require('express').Router()
 const client = require('twilio')(process.env.accountSid, process.env.authToken);
-const multer = require('multer');
-const fs = require('fs')
-const path = require('path')
 
-const upload = multer()
-
-UserController.post('/uploadCoverPhoto', upload.array(), (req, res) => {
-    let { userid, type, filename } = req.headers
-    let dir = path.join(__dirname, '..', `static/userImages/${userid}`)
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-    let newFileName = `${filename}${new Date() * 1}.${type}`
-    fs.writeFile(`${dir}/${newFileName}`, req.body.file.replace(/^data:image\/jpeg;base64,/, "").replace(/^data:image\/jpg;base64,/, "").replace(/^data:image\/png;base64,/, ""), 'base64', function (err) {
-        if (err) console.log(err);
-        else {
-            const newURL = `http://192.168.43.90:3000/userImages/${userid}/${newFileName}`
-            User.findById(userid)
-                .then(userData => {
-                    let fbToken = JSON.parse(userData.facebookToken)
-                    fbToken.coverPhotoURL = newURL
-                    User.findByIdAndUpdate(userid, { $set: { facebookToken: JSON.stringify(fbToken) } })
-                        .then(data => {
-                            res.send({ data: newURL });
-                        })
-                })
-
-        }
-
-
-    });
+UserController.post('/updateFacebookToken', (req, res) => {
+    let { userid, facebookToken } = req.body
+    console.log("hit")
+    User.findByIdAndUpdate(userid, { $set: { facebookToken: JSON.stringify(facebookToken) } })
+        .then(data => {
+            res.send({ data: 1 });
+        })
 })
 
 
