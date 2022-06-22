@@ -35,6 +35,22 @@ let notification = require('./schemas/notifications')
 let admin = require('./schemas/admin');
 const Tag = require('./schemas/tags');
 const Post = require('./schemas/post');
+const AvailableItem = require('./schemas/availableItem');
+async function updateDates() {
+    let posts = await Post.find({})
+    let postPromises = []
+    for (let postItem of posts) {
+        postPromises.push(Post.findByIdAndUpdate(postItem._id, { $inc: { postedOn: - 24 * 3600 * 1000 } }))
+    }
+    await Promise.all(postPromises)
+
+    let availableItemList = await AvailableItem.find({})
+    let itemsPromises = []
+    for (let item of availableItemList) {
+        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
+    }
+    await Promise.all(itemsPromises)
+}
 function startExpress() {
 
     let app = express()
@@ -142,4 +158,11 @@ function startExpress() {
     }
 
     app.listen(process.env.PORT || 3000)
+    app.get('/fixDate', (req, res) => {
+        updateDates()
+            .then(data => {
+                res.send("done")
+            })
+    })
 }
+
