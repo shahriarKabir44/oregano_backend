@@ -421,7 +421,6 @@ const RootQueryType = new GraphQLObjectType({
                 city: { type: GraphQLString }
             },
             async resolve(parent, args) {
-                console.log(args);
                 return await post.find({ city: args.city })
             }
         },

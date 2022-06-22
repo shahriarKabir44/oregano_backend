@@ -20,7 +20,7 @@ app.controller('myController', function ($scope, $http) {
     }
     $scope.availableRegions = ['Khulna',
         'Jhenaidah',
-        'Jashore',
+        'Jessore',
         'Chuadanga',
         'Bagerhat',
         'Satkhira',
