@@ -3,7 +3,21 @@ const Post = require('../schemas/post')
 
 const AvailableItem = require('../schemas/availableItem');
 
+PostController.post('/addNewAvaialableItem', async (req, res) => {
+    let { userId, tagName, unitPrice, region } = req.body
+    console.log(req.body)
+    let newDate = Math.floor((new Date()) / (24 * 3600 * 1000))
+    let data = await AvailableItem.updateOne({
+        $and: [
+            { userId: userId },
+            { tag: tagName },
+            { region: region }
+        ]
+    }, { $set: { day: newDate, unitPrice: unitPrice, region: region } },
+        { upsert: true })
 
+    res.send({ data: data })
+})
 
 
 PostController.post('/removeTodayTags', (req, res) => {
