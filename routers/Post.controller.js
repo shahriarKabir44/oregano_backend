@@ -5,7 +5,6 @@ const AvailableItem = require('../schemas/availableItem');
 
 PostController.post('/addNewAvaialableItem', async (req, res) => {
     let { userId, tagName, unitPrice, region } = req.body
-    console.log(req.body)
     let newDate = Math.floor((new Date()) / (24 * 3600 * 1000))
     let data = await AvailableItem.updateOne({
         $and: [
@@ -19,6 +18,17 @@ PostController.post('/addNewAvaialableItem', async (req, res) => {
     res.send({ data: data })
 })
 
+PostController.post('/removeAvailableItem', (req, res) => {
+    let { userId, tagName } = req.body
+    AvailableItem.findOneAndDelete({
+        $and: [
+            { userId: userId },
+            {tag: tagName}
+        ]
+    }).then((datas) => {
+        res.send({data:datas})
+    })
+})
 
 PostController.post('/removeTodayTags', (req, res) => {
     AvailableItem.deleteMany({ userId: req.body.userId })
