@@ -415,15 +415,7 @@ const RootQueryType = new GraphQLObjectType({
                 return await post.findById(args.id)
             }
         },
-        findLocalPosts: {
-            type: new GraphQLList(PostType),
-            args: {
-                city: { type: GraphQLString }
-            },
-            async resolve(parent, args) {
-                return await post.find({ city: args.city })
-            }
-        },
+         
 
         getCreatedPosts: {
             type: new GraphQLList(PostType),

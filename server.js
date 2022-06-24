@@ -39,17 +39,19 @@ const AvailableItem = require('./schemas/availableItem');
 async function updateDates() {
     let posts = await Post.find({})
     let postPromises = []
+    let dayInMs = 24 * 3600 * 1000
+    let startTime = Math.floor((new Date()) / (dayInMs)) * dayInMs
     for (let postItem of posts) {
-        postPromises.push(Post.findByIdAndUpdate(postItem._id, { $inc: { postedOn: - 24 * 3600 * 1000 } }))
+        postPromises.push(Post.findByIdAndUpdate(postItem._id, { $set: { postedOn: startTime + postItem.postedOn % dayInMs } }))
     }
     await Promise.all(postPromises)
 
-    let availableItemList = await AvailableItem.find({})
-    let itemsPromises = []
-    for (let item of availableItemList) {
-        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
-    }
-    await Promise.all(itemsPromises)
+    // let availableItemList = await AvailableItem.find({})
+    // let itemsPromises = []
+    // for (let item of availableItemList) {
+    //     itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
+    // }
+    // await Promise.all(itemsPromises)
 }
 function startExpress() {
 
