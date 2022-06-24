@@ -4,8 +4,8 @@ const UserController = require('express').Router()
 const client = require('twilio')(process.env.accountSid, process.env.authToken);
 
 UserController.post('/updateFacebookToken', (req, res) => {
-    let { userid, facebookToken } = req.body
-    User.findByIdAndUpdate(userid, { $set: { facebookToken: JSON.stringify(facebookToken) } })
+    let { userId, facebookToken } = req.body
+    User.findByIdAndUpdate(userId, { $set: { facebookToken: JSON.stringify(facebookToken) } })
         .then(data => {
             res.send({ data: 1 });
         })
