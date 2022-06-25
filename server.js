@@ -46,12 +46,12 @@ async function updateDates() {
     }
     await Promise.all(postPromises)
 
-    // let availableItemList = await AvailableItem.find({})
-    // let itemsPromises = []
-    // for (let item of availableItemList) {
-    //     itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
-    // }
-    // await Promise.all(itemsPromises)
+     let availableItemList = await AvailableItem.find({})
+     let itemsPromises = []
+     for (let item of availableItemList) {
+         itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
+     }
+     await Promise.all(itemsPromises)
 }
 function startExpress() {
 

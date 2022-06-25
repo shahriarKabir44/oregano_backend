@@ -286,6 +286,7 @@ const OrderItemType = new GraphQLObjectType({
         lowerCasedName: { type: GraphQLString },
         amount: { type: GraphQLInt },
         status: { type: GraphQLInt },
+        totalPrice: { type: GraphQLInt },
         lastPost: {
             type: PostType,
             async resolve(parent, args) {
@@ -556,6 +557,8 @@ module.exports = new GraphQLSchema({
                     itemName: { type: GraphQLString },
                     lowerCasedName: { type: GraphQLString },
                     amount: { type: GraphQLInt },
+                    totalPrice: { type: GraphQLInt }
+
                 },
                 async resolve(parent, args) {
                     let newOrderItem = new orderItem({ ...args, status: 1 })
