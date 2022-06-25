@@ -454,7 +454,8 @@ const RootQueryType = new GraphQLObjectType({
                 return await Order.find({
                     $and: [
                         { riderId: args.id },
-                        { status: 3 }
+                        { status: { $gte: 3 } },
+                        { status: {$lte:4 } }
                     ]
                 }).sort({ time: -1 })
             }
