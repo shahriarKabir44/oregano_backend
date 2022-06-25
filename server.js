@@ -36,6 +36,7 @@ const Tag = require('./schemas/tags');
 const Post = require('./schemas/post');
 const AvailableItem = require('./schemas/availableItem');
 const { startSending } = require('./utils/sendNotifications');
+const AdminRegion = require('./schemas/adminRegion');
 async function updateDates() {
     let posts = await Post.find({})
     let postPromises = []
@@ -69,10 +70,7 @@ function startExpress() {
                 res.send({ data: 1 })
             })
     })
-    app.get('/notif', (req, res) => {
-        startSending("62b0176de04fc0ceef4354de", "fuck you")
-        res.send("doen")
-    })
+     
     app.use('/connection', require('./routers/Connection.controller'))
     app.get('/getAllTags', (req, res) => {
         Post.find({}).distinct('lowerCasedName').then(data => {
@@ -121,7 +119,7 @@ function startExpress() {
 
     app.post('/subscribe', (req, res) => {
         const { adminId, subscriptionToken } = req.body
-      
+
 
         admin.findByIdAndUpdate(adminId, { endpoint: JSON.stringify(subscriptionToken) })
             .then(() => {
@@ -136,6 +134,29 @@ function startExpress() {
     })
 
     app.use('/posts', require('./routers/Post.controller'))
+
+    app.get('/insertPlace', (req, res) => {
+         let newRelation = new AdminRegion({
+             adminId: "62462a2c8f13da92a3d3b88a",
+             region: "Khulna",
+         })
+         newRelation.save()
+             .then(data => {
+                 AdminRegion.findOne({ region: "Khulna" }).populate({
+                     path:"adminId"
+                 })
+                    .then(rws=>{
+                        console.log(rws)
+                res.send("done")
+                    })
+                      .catch(err => {
+                          console.error(err)
+                          res.send("error")
+                      })
+        
+
+          })
+    })
 
     app.use('/orders', require('./routers/Order.contoller'))
     app.use('/admin', require('./routers/Admin.controller'))

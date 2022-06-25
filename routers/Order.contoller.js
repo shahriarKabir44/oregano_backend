@@ -16,6 +16,7 @@ OrderController.get('/getPendingOrders', (req, res) => {
 OrderController.post('/markPickedUp', async (req, res) => {
 
     findAdminAndNotify(req.body.orderId)
+    res.send({ data: 1 })
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { $set: { status: 4, deliveryTime: (new Date()) * 1 } }),
         (async () => {
@@ -41,12 +42,13 @@ OrderController.post('/markPickedUp', async (req, res) => {
     })
 
 
-    res.send({ data: 1 })
+   
 
 })
 
 OrderController.post('/markDelivered', async (req, res) => {
-    sendNotifications()
+    findAdminAndNotify(req.body.orderId)
+    res.send({ data: 1 })
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { $set: { status: 5 } }),
         (async () => {
@@ -68,7 +70,7 @@ OrderController.post('/markDelivered', async (req, res) => {
                 message: "Your order has arrived. Please pick up."
             })
         })()])
-    res.send({ data: 1 })
+    
 
 })
 
@@ -112,7 +114,7 @@ OrderController.get('/acceptOrder/:orderId', (req, res) => {
 OrderController.get('/requestRider/:orderId', (req, res) => {
     order.findByIdAndUpdate(req.params.orderId, { status: -2 })
         .then(data => {
-            sendNotifications()
+            findAdminAndNotify(req.params.orderId)
             res.send({ data: data })
         })
 })
@@ -142,6 +144,7 @@ OrderController.post('/createNewOrder', async (req, res) => {
 })
 
 OrderController.post('/rejectOrder', async (req, res) => {
+    res.send({ data: 1 })
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { status: 2 }),
         (async () => {
@@ -165,7 +168,7 @@ OrderController.post('/rejectOrder', async (req, res) => {
         })()
     ])
 
-    res.send({ data: 1 })
+    
 })
 
 OrderController.post('/rejectOrderItem', async (req, res) => {
