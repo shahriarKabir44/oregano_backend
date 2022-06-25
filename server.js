@@ -29,13 +29,13 @@ if (cluster.isMaster) {
     startExpress();
 }
 
-let tag = require('./schemas/tags')
 let user = require('./schemas/user')
 let notification = require('./schemas/notifications')
 let admin = require('./schemas/admin');
 const Tag = require('./schemas/tags');
 const Post = require('./schemas/post');
 const AvailableItem = require('./schemas/availableItem');
+const { startSending } = require('./utils/sendNotifications');
 async function updateDates() {
     let posts = await Post.find({})
     let postPromises = []
@@ -46,12 +46,12 @@ async function updateDates() {
     }
     await Promise.all(postPromises)
 
-     let availableItemList = await AvailableItem.find({})
-     let itemsPromises = []
-     for (let item of availableItemList) {
-         itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
-     }
-     await Promise.all(itemsPromises)
+    let availableItemList = await AvailableItem.find({})
+    let itemsPromises = []
+    for (let item of availableItemList) {
+        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
+    }
+    await Promise.all(itemsPromises)
 }
 function startExpress() {
 
@@ -69,7 +69,10 @@ function startExpress() {
                 res.send({ data: 1 })
             })
     })
-
+    app.get('/notif', (req, res) => {
+        startSending("62b0176de04fc0ceef4354de", "fuck you")
+        res.send("doen")
+    })
     app.use('/connection', require('./routers/Connection.controller'))
     app.get('/getAllTags', (req, res) => {
         Post.find({}).distinct('lowerCasedName').then(data => {
@@ -117,13 +120,13 @@ function startExpress() {
 
 
     app.post('/subscribe', (req, res) => {
-        const subscription = req.body
-        //res.status(201).json({})
-        admin.findByIdAndUpdate("62462a2c8f13da92a3d3b88a", { endpoint: JSON.stringify(subscription) })
+        const { adminId, subscriptionToken } = req.body
+      
+
+        admin.findByIdAndUpdate(adminId, { endpoint: JSON.stringify(subscriptionToken) })
             .then(() => {
                 res.send({ body: 'abcd' })
             })
-
     })
     app.use('/ratings', require('./routers/Rating.controller'))
     app.get('/updateSeenStatus/:id', function (req, res) {

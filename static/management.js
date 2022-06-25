@@ -20,7 +20,7 @@ app.controller('myController', function ($scope, $http) {
     }
     $scope.availableRegions = ['Khulna',
         'Jhenaidah',
-        'Jessore',
+        'Jessore/Jashore',
         'Chuadanga',
         'Bagerhat',
         'Satkhira',
@@ -73,9 +73,9 @@ app.controller('myController', function ($scope, $http) {
     }
     $scope.isLoggedIn = () => {
         let status = localStorage.getItem('token')
-
         if (!status) {
             $scope.admin.isLoggedIn = false
+            localStorage.clear()
         }
         else {
             fetch('/admin/isAuthorized', {
@@ -86,12 +86,14 @@ app.controller('myController', function ($scope, $http) {
                 }
             }).then(res => res.json())
                 .then(({ data }) => {
+                    console.log(data)
                     $scope.$apply(() => {
 
                         $scope.admin = data.user
                         $scope.admin.isLoggedIn = true
                         $scope.fetchAllOrders(data.user.region)
                     })
+                    retrySubscription(data.user._id)
                 })
 
         }
@@ -104,10 +106,33 @@ app.controller('myController', function ($scope, $http) {
         $scope.isLoggedIn()
     }
 
-    $scope.fetchAllOrders = (region) => {
-        $http.post('/graphql', JSON.stringify({
+    $scope.fetchAllOrders = async (region) => {
+        let regionNames = region.split('/')
+        let orderList = []
+
+        for (let regionSubName of regionNames) {
+            let orders = await $scope.fetchOrderByRegionName(regionSubName)
+            orderList = [...orderList, ...orders]
+        }
+        console.log(orderList)
+        $scope.$apply(() => {
+            $scope.orders = orderList
+            $scope.temOrderList = orderList
+        })
+
+    }
+    navigator.serviceWorker.onmessage = (event) => {
+        $scope.orders = []
+        $scope.temOrderList = []
+        $scope.isLoggedIn()
+        console.log(event)
+        // location.reload(true)
+
+    };
+    $scope.fetchOrderByRegionName = async (regionName) => {
+        let { data } = await $http.post('/graphql', JSON.stringify({
             query: `query{
-                getAllOrders(region:"${region}"){
+                getAllOrders(region:"${regionName}"){
                   id
                   
                   buyer{
@@ -131,43 +156,43 @@ app.controller('myController', function ($scope, $http) {
                 }
               }`
         }))
-            .then(({ data }) => {
-                let orderDatas = data.data.getAllOrders.filter(order => (order.status != 0 && order.status != -1))
 
-                for (let order of orderDatas) {
-                    order._id = order.id
-                    order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
+        let orderDatas = data.data.getAllOrders.filter(order => (order.status != 0 && order.status != -1))
+
+        for (let order of orderDatas) {
+            $scope.processOrder(order)
+        }
+        return orderDatas
+    }
+    $scope.processOrder = (order) => {
+        order._id = order.id
+        order.orderTime = (new Date(order.time)).toLocaleTimeString() + ',' + (new Date(order.time)).toLocaleDateString()
 
 
-                    if (order.status == -2) {
-                        order.statusText = "Pending rider"
-                        order.actionText = "Assign rider"
-                    }
-                    else if (order.status == 3) {
-                        order.statusText = "Pending pickup"
-                        order.actionText = "View details"
-                    }
-                    else if (order.status == 2) {
-                        order.statusText = "Rejected"
-                        order.actionText = "View details"
-                    }
-                    else if (order.status == 4) {
-                        order.statusText = "Pending delivery"
-                        order.actionText = "View details"
-                    }
-                    else if (order.status == 5) {
-                        order.statusText = "Pending payment"
-                        order.actionText = "View details"
-                    } else if (order.status == 6) {
-                        order.statusText = "Paid"
-                        order.actionText = "View details"
-                    }
-                }
-                $scope.orders = orderDatas
-                $scope.temOrderList = orderDatas
-            }, (failure) => {
-
-            })
+        if (order.status == -2) {
+            order.statusText = "Pending rider"
+            order.actionText = "Assign rider"
+        }
+        else if (order.status == 3) {
+            order.statusText = "Pending pickup"
+            order.actionText = "View details"
+        }
+        else if (order.status == 2) {
+            order.statusText = "Rejected"
+            order.actionText = "View details"
+        }
+        else if (order.status == 4) {
+            order.statusText = "Pending delivery"
+            order.actionText = "View details"
+        }
+        else if (order.status == 5) {
+            order.statusText = "Pending payment"
+            order.actionText = "View details"
+        } else if (order.status == 6) {
+            order.statusText = "Paid"
+            order.actionText = "View details"
+        }
+        return order
     }
     $scope.orderInfo = {
         buyerName: "",
@@ -350,23 +375,39 @@ navigator.serviceWorker.ready.then(async (register) => {
         userVisibleOnly: true,
         applicationServerKey: convertToUnit8Array(public_key),
     })
-    var tm = await fetch('/subscribe', {
+    localStorage.setItem("subscriptionToken", JSON.stringify(subscription))
+
+})
+function retrySubscription(adminId) {
+
+    if (localStorage.getItem('subscriptionToken')) {
+        subscribe(adminId)
+    }
+    else if (!localStorage.getItem("isSubscribed")) {
+        setTimeout(retrySubscription, 200)
+    }
+}
+function subscribe(adminId) {
+    let subscriptionToken = localStorage.getItem('subscriptionToken')
+    localStorage.removeItem('subscriptionToken')
+    localStorage.removeItem('isSubscribed')
+    fetch('/subscribe', {
         method: 'POST',
         headers: {
-            'Content-type': 'application/json',
-            'Accept': 'application/json'
+            'Content-type': 'application/json'
         },
-        body: JSON.stringify(subscription)
-    })
-})
+        body: JSON.stringify({
+            adminId: adminId,
+            subscriptionToken: JSON.parse(subscriptionToken)
+        })
+    }).then((res) => res.json())
+        .then((data) => {
+            localStorage.setItem("isSubscribed", JSON.stringify(true))
+        })
+}
 
 
 
-
-navigator.serviceWorker.onmessage = (event) => {
-    location.reload(true)
-
-};
 
 /**
  * 

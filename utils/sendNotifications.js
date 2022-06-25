@@ -5,13 +5,26 @@ const public_key = 'BJ6uMybJWBmqYaQH5K8avYnfDQf9e-iX3euxlHrd6lh3ZBBPlmE8qYMhjoQC
 const private_key = 'eSJlzY26NrET8pybZj5IoUnpnAA4K_jWuDZ5hEy5q5M'
 webPush.setVapidDetails('mailto:abc@def.com', public_key, private_key)
 const admin = require('../schemas/admin')
-function startSending(client, data) {
-    admin.findById("62462a2c8f13da92a3d3b88a")
+const Order = require('../schemas/order')
+function startSending(client, message) {
+    admin.findById(client)
         .then(data => {
-            webPush.sendNotification(JSON.parse(data.endpoint), "test").catch(err => console.log(err))
+            webPush.sendNotification(JSON.parse(data.endpoint), JSON.stringify(message)).catch(err => console.log(err))
 
         })
 
 }
 
-module.exports = startSending
+function findAdminAndNotify(orderId) {
+    Order.findById(orderId)
+        .then(data => {
+            admin.findOne({ region: data.city })
+                .then(admin => {
+                    webPush.sendNotification(JSON.parse(admin.endpoint), "message").catch(err => console.log(err))
+                })
+        })
+}
+
+module.exports = {
+    findAdminAndNotify, startSending
+}

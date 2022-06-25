@@ -2,7 +2,7 @@ let OrderController = require('express').Router()
 let order = require('../schemas/order')
 let notification = require('../schemas/notifications')
 let orderItem = require('../schemas/orderItem')
-const sendNotifications = require('../utils/sendNotifications')
+const { findAdminAndNotify } = require('../utils/sendNotifications')
 const User = require('../schemas/user')
 const pushNotificationManager = require('../utils/pushNotificationManager')
 
@@ -15,7 +15,7 @@ OrderController.get('/getPendingOrders', (req, res) => {
 
 OrderController.post('/markPickedUp', async (req, res) => {
 
-    sendNotifications()
+    findAdminAndNotify(req.body.orderId)
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { $set: { status: 4, deliveryTime: (new Date()) * 1 } }),
         (async () => {
