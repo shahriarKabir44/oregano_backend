@@ -96,13 +96,24 @@ const AvailableItemType = new GraphQLObjectType({
         rating: { type: GraphQLInt },
         unitPrice: { type: GraphQLFloat },
         ratedBy: { type: GraphQLFloat },
+        numPeopleRated: { type: GraphQLInt },
+        region: { type: GraphQLString },
+        isAvailable: {
+            type: GraphQLInt,
+            resolve(parent, args) {
+                let dayInMs = 24 * 3600 * 1000
+                let today = Math.floor((new Date()) / dayInMs)
+
+                return today == parent.day ? 1 : 0
+            }
+        },
         lowerCasedName: {
             type: GraphQLString,
             resolve(parent, args) {
                 return parent.tag
             }
         },
-        region: { type: GraphQLString },
+
 
         itemName: {
             type: GraphQLString,
@@ -416,7 +427,7 @@ const RootQueryType = new GraphQLObjectType({
                 return await post.findById(args.id)
             }
         },
-         
+
 
         getCreatedPosts: {
             type: new GraphQLList(PostType),
@@ -455,7 +466,7 @@ const RootQueryType = new GraphQLObjectType({
                     $and: [
                         { riderId: args.id },
                         { status: { $gte: 3 } },
-                        { status: {$lte:4 } }
+                        { status: { $lte: 4 } }
                     ]
                 }).sort({ time: -1 })
             }

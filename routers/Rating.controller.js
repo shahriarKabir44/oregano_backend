@@ -1,33 +1,27 @@
 const Order = require('../schemas/order')
 const Rating = require('../schemas/rating')
-const UserTagRating = require('../schemas/user_tag_rating')
 const Notification = require('../schemas/notifications')
 const RatingController = require('express').Router()
 const User = require('../schemas/user')
 const pushNotificationManager = require('../utils/pushNotificationManager')
 
-
+const AvailableItem = require('../schemas/availableItem')
 
 async function updateratingByTags(tagname, ownerId, rating) {
-    let existingData = await UserTagRating.findOne({
+    let existingData = await AvailableItem.findOne({
         $and: [
-            { tagName: tagname },
-            { ownerId: ownerId },
+            { tag: tagname },
+            { userId: ownerId },
         ]
     })
+    return await AvailableItem({
+        $and: [
+            { tag: tagname },
+            { userId: ownerId },
+        ]
+    }, { $set: { rating: (existingData.rating * 2 + rating) / 2, numPeopleRated: existingData.numPeopleRated + 1 } })
 
-    if (!existingData) {
-        let newUserTagRating = new UserTagRating({
-            ownerId: ownerId,
-            tagName: tagname,
-            avg_rating: rating
-        })
-        return await newUserTagRating.save()
-    }
-    else {
-        let newRating = (existingData.avg_rating + rating) / 2
-        return await UserTagRating.findByIdAndUpdate(existingData._id, { avg_rating: newRating })
-    }
+
 }
 
 RatingController.post('/getUserRating', (req, res) => {
@@ -49,21 +43,21 @@ RatingController.post('/updateOrder', (req, res) => {
         })
 })
 
-async function updateRating(existingData, newRating, ownerId) {
+async function updateRating(existingRatingData, newRating, ownerId) {
     let promises = [Rating.findByIdAndUpdate(existingData._id, { rating: newRating }),
 
     (async () => {
-        let existingRatingInfo = await UserTagRating.findOne({
+        let availableItemInfo = await AvailableItem.findOne({
             $and: [
-                { tagName: existingData.lowerCasedName },
-                { ownerId: ownerId }
+                { tag: existingRatingData.lowerCasedName },
+                { userId: ownerId }
             ]
         })
-        let exisitingRating = existingRatingInfo.avg_rating
-        let newAvgRating = (exisitingRating * 2 - existingData.rating)
-        if (!newAvgRating) newAvgRating = newRating
-        else newRating /= 2
-        return UserTagRating.findByIdAndUpdate(existingRatingInfo._id, { avg_rating: newAvgRating })
+        let exisitingRating = availableItemInfo.rating
+        let newAvgRating = (exisitingRating.numPeopleRated * exisitingRating.rating - existingRatingData.rating + newRating) / exisitingRating.numPeopleRated
+
+
+        return AvailableItem.findByIdAndUpdate(availableItemInfo._id, { rating: newAvgRating })
 
     })()
     ]
@@ -85,6 +79,7 @@ async function createRating(lowerCasedName, ownerId, ratedBy, rating) {
 
 RatingController.post('/rateItem', async (req, res) => {
     let { lowerCasedName, ownerId, ratedBy, rating, itemName, userName } = req.body
+    res.send({ data: 1 })
     let existingData = await Rating.findOne({
         $and: [
             { lowerCasedName: lowerCasedName },
@@ -94,7 +89,7 @@ RatingController.post('/rateItem', async (req, res) => {
 
     let promises = [(async () => {
         if (existingData) {
-            await updateRating(existingData, rating, ownerId)
+            await updateRating(existingRatingData, rating, ownerId)
         }
         else {
             await createRating(lowerCasedName, ownerId, ratedBy, rating)
@@ -122,11 +117,11 @@ RatingController.post('/rateItem', async (req, res) => {
 
     await Promise.all(promises)
 
-    res.send({ data: 1 })
+
 })
 
 RatingController.post('/getTagRatings', (req, res) => {
-    UserTagRating.find({ ownerId: req.body.ownerId })
+    AvailableItem.find({ userId: req.body.ownerId })
         .then(data => {
             res.send({ data: data })
         })

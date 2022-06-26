@@ -20,40 +20,36 @@ PostController.post('/addNewAvaialableItem', async (req, res) => {
 
 PostController.post('/removeAvailableItem', (req, res) => {
     let { userId, tagName } = req.body
-    AvailableItem.findOneAndDelete({
+    AvailableItem.findOneAndUpdate({
         $and: [
             { userId: userId },
-            {tag: tagName}
+            { tag: tagName }
         ]
-    }).then((datas) => {
-        res.send({data:datas})
+    }, { $set: { day: { $inc: -1 } } }).then((datas) => {
+        res.send({ data: datas })
     })
 })
 
 PostController.post('/removeTodayTags', (req, res) => {
-    AvailableItem.deleteMany({ userId: req.body.userId })
+    AvailableItem.updateMany({ userId: req.body.userId }, { $set: { day: { $inc: -1 } } }, { upsert: true })
         .then(data => {
             res.send({ data: data })
         })
 })
 
 PostController.post('/updateTags', (req, res) => {
-    AvailableItem.findOneAndDelete({
+    AvailableItem.findOneAndUpdate({
         $and: [
             { userId: req.body.userId },
-            { day: req.body.day }
+            { tag: req.body.tag }
         ]
-    }).then((rws) => {
-        let newData = new AvailableItem({
-            ...req.body,
-            rating: 0,
-            ratedBy: 0
+    }, {
+        $set: { ...req.body }
+    }, { upsert: true })
+        .then(data => {
+            res.send({ data: 1 })
         })
-        newData.save()
-            .then(data => {
-                res.send({ data: 1 })
-            })
-    })
+
 
 })
 

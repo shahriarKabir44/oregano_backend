@@ -5,9 +5,11 @@ const availableItemSchema = new mongoose.Schema({
     tag: { type: String },
     day: { type: Number },
     unitPrice: { type: Number },
-    rating: { type: Number }, //unnecessary
+    rating: { type: Number, default: 0 },
     ratedBy: { type: Number }, //number of people rated
-    region: { type: String }
+    region: { type: String },
+    isAvailable: { type: Number },
+    numPeopleRated: { type: Number, default: 0 }
 })
 
 let AvailableItem = mongoose.model('availableItem', availableItemSchema)
