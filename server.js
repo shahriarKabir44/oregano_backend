@@ -62,6 +62,11 @@ function startExpress() {
     app.set('view engine', 'ejs')
     app.use(express.static('static'))
 
+    app.get('/notif', (req, res) => {
+        startSending("62b0176de04fc0ceef4354de", "erggg")
+        res.send("done")
+    })
+
     app.use('/management', require('./routers/Management.controller'))
     app.post('/updatePushToken', (req, res) => {
 
@@ -70,7 +75,7 @@ function startExpress() {
                 res.send({ data: 1 })
             })
     })
-     
+
     app.use('/connection', require('./routers/Connection.controller'))
     app.get('/getAllTags', (req, res) => {
         Post.find({}).distinct('lowerCasedName').then(data => {
@@ -136,26 +141,26 @@ function startExpress() {
     app.use('/posts', require('./routers/Post.controller'))
 
     app.get('/insertPlace', (req, res) => {
-         let newRelation = new AdminRegion({
-             adminId: "62462a2c8f13da92a3d3b88a",
-             region: "Khulna",
-         })
-         newRelation.save()
-             .then(data => {
-                 AdminRegion.findOne({ region: "Khulna" }).populate({
-                     path:"adminId"
-                 })
-                    .then(rws=>{
+        let newRelation = new AdminRegion({
+            adminId: "62462a2c8f13da92a3d3b88a",
+            region: "Khulna",
+        })
+        newRelation.save()
+            .then(data => {
+                AdminRegion.findOne({ region: "Khulna" }).populate({
+                    path: "adminId"
+                })
+                    .then(rws => {
                         console.log(rws)
-                res.send("done")
+                        res.send("done")
                     })
-                      .catch(err => {
-                          console.error(err)
-                          res.send("error")
-                      })
-        
+                    .catch(err => {
+                        console.error(err)
+                        res.send("error")
+                    })
 
-          })
+
+            })
     })
 
     app.use('/orders', require('./routers/Order.contoller'))

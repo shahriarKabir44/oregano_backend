@@ -1,5 +1,9 @@
 var app = angular.module('myApp', []);
+function toggleSnackbar() {
+    var x = document.getElementById("snackbar");
+    x.classList.toggle("show");
 
+}
 app.controller('myController', function ($scope, $http) {
     $scope.admin = {
         region: "",
@@ -122,13 +126,15 @@ app.controller('myController', function ($scope, $http) {
 
     }
     navigator.serviceWorker.onmessage = (event) => {
-        $scope.orders = []
-        $scope.temOrderList = []
-        $scope.isLoggedIn()
+        toggleSnackbar()
         console.log(event)
         // location.reload(true)
 
     };
+    $scope.reloadOrders = () => {
+        toggleSnackbar()
+        $scope.isLoggedIn()
+    }
     $scope.fetchOrderByRegionName = async (regionName) => {
         let { data } = await $http.post('/graphql', JSON.stringify({
             query: `query{
