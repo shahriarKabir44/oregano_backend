@@ -20,12 +20,13 @@ PostController.post('/addNewAvaialableItem', async (req, res) => {
 
 PostController.post('/removeAvailableItem', (req, res) => {
     let { userId, tagName } = req.body
+    let today = Math.floor((new Date()) / (24 * 3600 * 1000))
     AvailableItem.findOneAndUpdate({
         $and: [
             { userId: userId },
             { tag: tagName }
         ]
-    }, { $set: { day: { $inc: -1 } } }).then((datas) => {
+    }, { day: today - 1 }).then((datas) => {
         res.send({ data: datas })
     })
 })

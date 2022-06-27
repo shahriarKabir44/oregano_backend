@@ -23,10 +23,10 @@ function findAdminAndNotify(orderId) {
                 path: "adminId"
             })
                 .then((admin) => {
-                   webPush.sendNotification(JSON.parse(admin.adminId.endpoint), "message").catch(err => console.log(err))
-                    console.log(admin)
+                    webPush.sendNotification(JSON.parse(admin.adminId.endpoint), "message").catch(err => console.log(err))
+
                 })
-             
+
         })
 }
 

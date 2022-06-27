@@ -130,7 +130,12 @@ const AvailableItemType = new GraphQLObjectType({
         relatedPost: {
             type: new GraphQLList(PostType),
             resolve(parent, args) {
-                return post.find({ lowerCasedName: parent.tag })
+                return post.find({
+                    $and: [
+                        { lowerCasedName: parent.tag },
+                        { postedBy: parent.userId }
+                    ]
+                })
             }
         },
         getLastPost: {
@@ -430,12 +435,12 @@ const RootQueryType = new GraphQLObjectType({
 
 
         getCreatedPosts: {
-            type: new GraphQLList(PostType),
+            type: new GraphQLList(AvailableItemType),
             args: {
                 id: { type: GraphQLID }
             },
             async resolve(parent, args) {
-                return await post.find({ postedBy: args.id })
+                return await AvailableItem.find({ userId: args.id })
             }
         },
         getCreatedOrders: {

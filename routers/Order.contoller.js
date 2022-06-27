@@ -42,7 +42,7 @@ OrderController.post('/markPickedUp', async (req, res) => {
     })
 
 
-   
+
 
 })
 
@@ -70,12 +70,12 @@ OrderController.post('/markDelivered', async (req, res) => {
                 message: "Your order has arrived. Please pick up."
             })
         })()])
-    
+
 
 })
 
 OrderController.post('/assignRider', async (req, res) => {
-
+    res.send({ data: 1 });
     await Promise.all([
         order.findByIdAndUpdate(req.body.orderId, { $set: { riderId: req.body.riderId, status: 3 } }),
         (async () => {
@@ -97,7 +97,7 @@ OrderController.post('/assignRider', async (req, res) => {
                 message: "You have been assigned a new Delivery."
             })
         })()])
-    res.send({ data: 1 });
+
 })
 OrderController.get('/acceptOrder/:orderId', (req, res) => {
     order.findByIdAndUpdate(req.params.orderId, { status: -1 })
@@ -120,9 +120,11 @@ OrderController.get('/requestRider/:orderId', (req, res) => {
 })
 
 OrderController.post('/createNewOrder', async (req, res) => {
+
     let { notificationMessage, time, sellerId } = req.body;
     let newOrder = new order({ ...req.body, isRated: 0 })
     await newOrder.save()
+    res.send({ data: newOrder })
     let newNotification = new notification({
         type: 1,
         isSeen: 0,
@@ -139,7 +141,7 @@ OrderController.post('/createNewOrder', async (req, res) => {
         to: receiverToken,
         message: notificationMessage
     })
-    res.send({ data: newOrder })
+
 
 })
 
@@ -168,7 +170,7 @@ OrderController.post('/rejectOrder', async (req, res) => {
         })()
     ])
 
-    
+
 })
 
 OrderController.post('/rejectOrderItem', async (req, res) => {

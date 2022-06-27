@@ -50,7 +50,7 @@ async function updateDates() {
     let availableItemList = await AvailableItem.find({})
     let itemsPromises = []
     for (let item of availableItemList) {
-        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { $inc: { day: 1 } }))
+        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, {day: Math.floor((new Date()) / (dayInMs)) }))
     }
     await Promise.all(itemsPromises)
 }
