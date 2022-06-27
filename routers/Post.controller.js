@@ -31,6 +31,13 @@ PostController.post('/removeAvailableItem', (req, res) => {
     })
 })
 
+PostController.post('/deletePost', (req, res) => {
+    Post.findByIdAndDelete(req.body.postId)
+        .then(data => {
+            res.send({ data: data })
+        })
+})
+
 PostController.post('/removeTodayTags', (req, res) => {
     AvailableItem.updateMany({ userId: req.body.userId }, { $set: { day: { $inc: -1 } } }, { upsert: true })
         .then(data => {
