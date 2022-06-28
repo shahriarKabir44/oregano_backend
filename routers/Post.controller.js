@@ -98,11 +98,26 @@ PostController.get("/isItemAvailable/:itemName/:ownerId", (req, res) => {
             }
         })
 })
-PostController.post('/createPost', async (req, res) => {
+PostController.post('/createPost', (req, res) => {
     let newPost = new Post(req.body)
-    await newPost.save()
-
-    res.send({ data: newPost })
+    res.send({ data: 1 })
+    newPost.save()
+    let day = Math.floor((new Date()) / (24 * 3600 * 1000))
+    console.log(req.body)
+    AvailableItem.updateOne({
+        $and: [
+            { userId: req.body.postedBy },
+            { tag: req.body.lowerCasedName }
+        ]
+    }, {
+        $set: {
+            day: req.body.isMarkedAvailable ? day : day - 1,
+            unitPrice: req.body.unitPrice,
+            region: req.body.city
+        }
+    }, { upsert: true }).then(data => {
+        console.log(data, "here")
+    })
 })
 
 
