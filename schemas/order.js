@@ -17,7 +17,9 @@ var orderSchema = new mongoose.Schema({
     isPaid: { type: Number },
     isRated: { type: Number },
     deliveryTime: { type: Number },
-    city: { type: String }
+    city: { type: String },
+    deliveryCharge: { type: Number, default: 0 },
+    totalCharge: { type: Number, default: 0 }
 })
 
 const Order = mongoose.model('Order', orderSchema)

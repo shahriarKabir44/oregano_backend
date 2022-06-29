@@ -239,6 +239,8 @@ const OrderType = new GraphQLObjectType({
         isPaid: { type: GraphQLInt },
         deliveryTime: { type: GraphQLFloat },
         city: { type: GraphQLString },
+        deliveryCharge: { type: GraphQLInt },
+        totalCharge: { type: GraphQLInt },
         buyer: {
             type: UserType,
             async resolve(parent, args) {

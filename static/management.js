@@ -90,7 +90,7 @@ app.controller('myController', function ($scope, $http) {
                 }
             }).then(res => res.json())
                 .then(({ data }) => {
-                    console.log(data)
+
                     $scope.$apply(() => {
 
                         $scope.admin = data.user
@@ -139,26 +139,28 @@ app.controller('myController', function ($scope, $http) {
         let { data } = await $http.post('/graphql', JSON.stringify({
             query: `query{
                 getAllOrders(region:"${regionName}"){
-                  id
-                  
-                  buyer{
-                    personalInfo{
-                      name
-                      
-                    }
-                    phone
+                    id
                     
-                  }
-                  seller{
-                    phone
-                    personalInfo{
-                      name
+                    buyer{
+                        personalInfo{
+                        name
+                        
+                        }
+                        phone
+                        
                     }
-                  }
-                  time
-                  status
-                  pickupLocationGeocode
-                  dropLocationGeocode
+                    seller{
+                        phone
+                        personalInfo{
+                        name
+                        }
+                    }
+                    time
+                    status
+                    pickupLocationGeocode
+                    dropLocationGeocode
+                    totalCharge
+    			    deliveryCharge
                 }
               }`
         }))
@@ -222,6 +224,8 @@ app.controller('myController', function ($scope, $http) {
                     pickupLocationGeocode
                     buyerId
                     sellerId
+                    totalCharge
+    			    deliveryCharge
                     charge
                     status
                     deliveryTime
@@ -257,6 +261,8 @@ app.controller('myController', function ($scope, $http) {
                 pickupFrom: info.pickupLocationGeocode,
                 dropTo: info.dropLocationGeocode,
                 sellerPhone: info.seller.phone,
+                deliveryCharge: info.deliveryCharge,
+                totalCharge: info.totalCharge
             }
             $scope.currentOrderStatus = info.status
             if (info.rider) {

@@ -103,7 +103,6 @@ PostController.post('/createPost', (req, res) => {
     res.send({ data: 1 })
     newPost.save()
     let day = Math.floor((new Date()) / (24 * 3600 * 1000))
-    console.log(req.body)
     AvailableItem.updateOne({
         $and: [
             { userId: req.body.postedBy },
@@ -116,7 +115,6 @@ PostController.post('/createPost', (req, res) => {
             region: req.body.city
         }
     }, { upsert: true }).then(data => {
-        console.log(data, "here")
     })
 })
 
