@@ -345,8 +345,8 @@ app.controller('myController', function ($scope, $http) {
         let { data } = await $http.get('http://localhost:3000/getRiderList')
         for (let rider of data.data) {
             rider.facebookToken = JSON.parse(rider.facebookToken)
-            rider.locationInfo = JSON.parse(rider.locationInfo)
-            let locationInfo = `${rider.locationInfo.city}, ${rider.locationInfo.district}, ${rider.locationInfo.subregion}, ${rider.locationInfo.region} `
+            // rider.locationInfo = JSON.parse(rider.locationInfo)
+            let locationInfo = rider.currentLocationName
             rider.currentPlace = locationInfo
         }
         $scope.$apply(() => {
