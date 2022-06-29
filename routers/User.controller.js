@@ -68,7 +68,7 @@ UserController.post('/requestOTP', (req, res) => {
                     client.messages
                         .create({
                             body: `Your account verification code is ${newOTPNumber}`,
-                            messagingServiceSid: process.env.messagingServiceSid,
+                            from: '+15017122661',
                             to: `+88${req.body.phone}`
                         })
                         .then(message => console.log(message.sid))

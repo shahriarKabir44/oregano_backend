@@ -112,7 +112,7 @@ PostController.post('/createPost', (req, res) => {
         $set: {
             day: req.body.isMarkedAvailable ? day : day - 1,
             unitPrice: req.body.unitPrice,
-            region: req.body.city
+            region: req.body.region
         }
     }, { upsert: true }).then(data => {
     })
