@@ -13,6 +13,7 @@ var userSchema = new mongoose.Schema({
     region: { type: String },
     name: { type: String },
     facebookId: { type: Number },
+    currentLocationName: { type: String }
 })
 
 const User = mongoose.model('User', userSchema)

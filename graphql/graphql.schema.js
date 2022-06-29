@@ -70,6 +70,7 @@ const UserType = new GraphQLObjectType({
         rating: { type: GraphQLFloat },
         currentCity: { type: GraphQLString },
         id: { type: GraphQLID },
+        currentLocationName: { type: GraphQLString },
         lastPost: {
             type: PostType,
             async resolve(parent, args) {

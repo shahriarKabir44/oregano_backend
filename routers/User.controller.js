@@ -10,7 +10,20 @@ UserController.post('/updateFacebookToken', (req, res) => {
             res.send({ data: 1 });
         })
 })
-
+UserController.post('/updateUserLocation', (req, res) => {
+    User.findByIdAndUpdate(req.body.userId, {
+        $set: {
+            locationInfo: req.body.locationInfo,
+            currentLongitude: req.body.currentLongitude,
+            currentLatitude: req.body.currentLatitude,
+            region: req.body.region,
+            currentLocationName: req.body.currentLocationName
+        }
+    })
+        .then(data => {
+            res.send({ data: 1 })
+        })
+})
 
 
 UserController.post('/isRegistered', (req, res) => {

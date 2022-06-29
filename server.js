@@ -92,19 +92,7 @@ function startExpress() {
 
     app.use('/user', require('./routers/User.controller'))
 
-    app.post('/updateUserLocation', (req, res) => {
-        user.findByIdAndUpdate(req.body.userId, {
-            $set: {
-                locationInfo: req.body.locationInfo,
-                currentLongitude: req.body.currentLongitude,
-                currentLatitude: req.body.currentLatitude,
-                region: req.body.region
-            }
-        })
-            .then(data => {
-                res.send({ data: 1 })
-            })
-    })
+    
 
     app.get('/management/rider_assignment', (req, res) => {
         res.render('rider_assignment.ejs')
