@@ -41,6 +41,18 @@ UserController.post('/isRegistered', (req, res) => {
         })
 })
 
+UserController.get('/testSms', (req, res) => {
+    res.send("done")
+    client.messages
+        .create({
+            body: `Your account verification code is`,
+            from: '+17407593488',
+            to: `+8801631560063`
+        })
+        .then(message => console.log(message.sid))
+        .done();
+})
+
 UserController.post('/requestOTP', (req, res) => {
     User.findOne({ phone: req.body.phone })
         .then(data => {
@@ -68,7 +80,7 @@ UserController.post('/requestOTP', (req, res) => {
                     client.messages
                         .create({
                             body: `Your account verification code is ${newOTPNumber}`,
-                            from: '+15017122661',
+                            from: '+17407593488',
                             to: `+88${req.body.phone}`
                         })
                         .then(message => console.log(message.sid))

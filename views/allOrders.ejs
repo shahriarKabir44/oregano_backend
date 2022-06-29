@@ -234,6 +234,14 @@
                                 <th>Delivery time:</th>
                                 <td>{{orderInfo.deliveryTime}}</td>
                             </tr>
+                            <tr ng-if="currentOrderStatus>=5">
+                                <th>Delivery charge:</th>
+                                <td>Tk.{{orderInfo.deliveryCharge}}</td>
+                            </tr>
+                            <tr ng-if="currentOrderStatus>=5">
+                                <th>Total charge:</th>
+                                <td>Tk.{{orderInfo.totalCharge}}</td>
+                            </tr>
                         </table>
 
                         <button ng-if="currentOrderStatus==5" ng-click="markPaid()" class="btn btn-success">Mark as
