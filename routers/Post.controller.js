@@ -2,6 +2,19 @@ let PostController = require('express').Router()
 const Post = require('../schemas/post')
 
 const AvailableItem = require('../schemas/availableItem');
+const { upload, uploader } = require('../utils/UploadManager')
+// 
+PostController.post('/uploadImage', [upload.single('file'), (req, res, next) => {
+    uploader(req, res)
+
+
+    next()
+
+
+}], (req, res) => {
+    console.log(req.headers)
+    res.send({ success: true })
+})
 
 PostController.post('/addNewAvaialableItem', async (req, res) => {
     let { userId, tagName, unitPrice, region } = req.body
@@ -97,6 +110,12 @@ PostController.get("/isItemAvailable/:itemName/:ownerId", (req, res) => {
                 })
             }
         })
+})
+
+PostController.post('/setPostImages', (req, res) => {
+    let { postId, images } = req.body
+    Post.findByIdAndUpdate(postId, { images })
+    res.send({ success: 1 })
 })
 PostController.post('/createPost', (req, res) => {
     let newPost = new Post(req.body)

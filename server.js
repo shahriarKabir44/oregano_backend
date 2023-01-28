@@ -50,7 +50,7 @@ async function updateDates() {
     let availableItemList = await AvailableItem.find({})
     let itemsPromises = []
     for (let item of availableItemList) {
-        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, {day: Math.floor((new Date()) / (dayInMs)) }))
+        itemsPromises.push(AvailableItem.findByIdAndUpdate(item._id, { day: Math.floor((new Date()) / (dayInMs)) }))
     }
     await Promise.all(itemsPromises)
 }
@@ -58,6 +58,8 @@ function startExpress() {
 
     let app = express()
     app.use(express.json())
+    app.use(express.static('uploads'))
+
     app.use(cors())
     app.set('view engine', 'ejs')
     app.use(express.static('static'))
@@ -92,7 +94,7 @@ function startExpress() {
 
     app.use('/user', require('./routers/User.controller'))
 
-    
+
 
     app.get('/management/rider_assignment', (req, res) => {
         res.render('rider_assignment.ejs')
