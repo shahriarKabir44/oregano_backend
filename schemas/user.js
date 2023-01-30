@@ -1,7 +1,7 @@
 var mongoose = require('mongoose')
 
 var userSchema = new mongoose.Schema({
-    facebookToken: { type: String },
+    profileImageURL: { type: String },
     phone: { type: String, unique: true },
     currentLatitude: { type: Number },
     currentLongitude: { type: Number },
@@ -13,7 +13,8 @@ var userSchema = new mongoose.Schema({
     region: { type: String },
     name: { type: String },
     facebookId: { type: Number },
-    currentLocationName: { type: String }
+    currentLocationName: { type: String },
+    coverPhotoURL: { type: String }
 })
 
 const User = mongoose.model('User', userSchema)

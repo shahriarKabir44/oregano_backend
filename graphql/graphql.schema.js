@@ -53,13 +53,8 @@ const LocationInfoJSON = new GraphQLObjectType({
 const UserType = new GraphQLObjectType({
     name: "User",
     fields: () => ({
-        facebookToken: { type: GraphQLString },
-        personalInfo: {
-            type: personalInfoType,
-            resolve(parent, args) {
-                return JSON.parse(parent.facebookToken)
-            }
-        },
+        profileImageURL: { type: GraphQLString },
+
         name: { type: GraphQLString },
         expoPushToken: { type: GraphQLString },
         region: { type: GraphQLString },

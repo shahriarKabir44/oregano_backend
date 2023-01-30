@@ -234,16 +234,22 @@ app.controller('myController', function ($scope, $http) {
                         
                     }
                     seller{
-                        facebookToken
+                        name
+                        profileImageURL 
+
                         phone
                     
                     }
                     buyer{
-                        facebookToken
+                        name
+                        profileImageURL 
+
                         phone
                     }
                     rider{
-                        facebookToken
+                        name
+                        profileImageURL  
+
                         phone
                     }
                 }
@@ -251,13 +257,11 @@ app.controller('myController', function ($scope, $http) {
         }))
 
         let info = data.data.getOrderInfo
-        info.buyer.facebookToken = JSON.parse(info.buyer.facebookToken)
-        info.seller.facebookToken = JSON.parse(info.seller.facebookToken)
         $scope.$apply(() => {
             $scope.orderInfo = {
-                buyerName: info.buyer.facebookToken.name,
+                buyerName: info.buyer.name,
                 buyerPhone: info.buyer.phone,
-                sellerName: info.seller.facebookToken.name,
+                sellerName: info.seller.name,
                 pickupFrom: info.pickupLocationGeocode,
                 dropTo: info.dropLocationGeocode,
                 sellerPhone: info.seller.phone,
@@ -266,10 +270,10 @@ app.controller('myController', function ($scope, $http) {
             }
             $scope.currentOrderStatus = info.status
             if (info.rider) {
-                info.rider.facebookToken = JSON.parse(info.rider.facebookToken)
+
                 $scope.orderInfo = {
                     ...$scope.orderInfo,
-                    riderName: info.rider.facebookToken.name,
+                    riderName: info.rider.name,
                     riderPhone: info.rider.phone,
 
                 }
@@ -344,7 +348,6 @@ app.controller('myController', function ($scope, $http) {
     $scope.getRiders = async function () {
         let { data } = await $http.get('http://localhost:3000/getRiderList')
         for (let rider of data.data) {
-            rider.facebookToken = JSON.parse(rider.facebookToken)
             // rider.locationInfo = JSON.parse(rider.locationInfo)
             let locationInfo = rider.currentLocationName
             rider.currentPlace = locationInfo

@@ -127,11 +127,9 @@ UserController.post('/confirmOTP', (req, res) => {
             let newUser = new User({
                 phone: req.body.phone,
                 name: req.body.user.name,
-                facebookToken: JSON.stringify({
-                    name: req.body.user.name,
-                    profileImageURL: req.body.user.profileImageURL,
-                    coverPhotoURL: "abcd"
-                }),
+                name: req.body.user.name,
+                profileImageURL: req.body.user.profileImageURL,
+                coverPhotoURL: "abcd",
                 isRider: 0,
                 facebookId: req.body.facebookId,
             })
